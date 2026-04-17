@@ -6,7 +6,6 @@
     <title>MathEM·SP | 3D + 10 Questões + Explicações Detalhadas</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ===== ESTILOS COMPLETOS (preservados e otimizados) ===== */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg: #080B12;
@@ -34,7 +33,7 @@
         .navbar { position: sticky; top:0; background: rgba(8,11,18,0.92); backdrop-filter: blur(20px); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 1.5rem; height:62px; z-index:200; flex-wrap:wrap; }
         .logo { font-weight:700; background: var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; font-family:'JetBrains Mono'; }
         .nav-tabs { display:flex; gap:0.2rem; background:var(--surface); padding:0.3rem; border-radius:0.875rem; }
-        .nav-tab { padding:0.45rem 0.9rem; border-radius:0.625rem; font-weight:600; background:transparent; color:var(--text-secondary); cursor:pointer; }
+        .nav-tab { padding:0.45rem 0.9rem; border-radius:0.625rem; font-weight:600; background:transparent; color:var(--text-secondary); cursor:pointer; border:none; font-family:'Space Grotesk',sans-serif; font-size:0.875rem; transition:0.2s; }
         .nav-tab.active { background:var(--primary); color:white; }
         .user-stats { display:flex; gap:0.5rem; }
         .stat-badge { background:rgba(79,142,247,0.1); border-radius:40px; padding:0.3rem 0.75rem; font-size:0.75rem; font-weight:700; display:flex; gap:0.4rem; color:var(--primary); }
@@ -43,40 +42,215 @@
         @keyframes fadeUp { from{opacity:0; transform:translateY(14px);} to{opacity:1;} }
         .card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
         .series-selector { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; background:var(--surface); padding:0.75rem; border-radius:var(--radius); }
-        .series-btn { padding:0.45rem 1.1rem; border-radius:2rem; font-weight:600; background:var(--surface-2); border:1px solid var(--border); color:var(--text-secondary); cursor:pointer; }
-        .series-btn.active { background:var(--grad-primary); color:white; box-shadow:0 0 12px rgba(79,142,247,0.3); }
+        .series-btn { padding:0.45rem 1.1rem; border-radius:2rem; font-weight:600; background:var(--surface-2); border:1px solid var(--border); color:var(--text-secondary); cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:0.2s; }
+        .series-btn.active { background:var(--grad-primary); color:white; box-shadow:0 0 12px rgba(79,142,247,0.3); border-color:transparent; }
         .section-title { font-size:1rem; font-weight:700; margin:1.5rem 0 1rem; color:var(--text-secondary); display:flex; gap:0.75rem; }
         .ae-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1rem; }
-        .ae-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; transition:0.2s; cursor:pointer; }
+        .ae-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; transition:0.2s; position:relative; }
         .ae-card:hover { border-color:rgba(79,142,247,0.4); transform:translateY(-3px); }
-        .btn-sm { padding:0.35rem 0.8rem; border-radius:var(--radius-sm); font-weight:600; background:var(--surface-2); border:1px solid var(--border); cursor:pointer; }
+        .ae-code { font-family:'JetBrains Mono'; font-size:0.7rem; color:var(--primary); margin-bottom:0.3rem; }
+        .ae-title { font-weight:700; margin-bottom:0.5rem; }
+        .ae-desc { font-size:0.8rem; color:var(--text-secondary); margin-bottom:1rem; }
+        .ae-actions { display:flex; gap:0.5rem; flex-wrap:wrap; }
+        .btn-sm { padding:0.35rem 0.8rem; border-radius:var(--radius-sm); font-weight:600; background:var(--surface-2); border:1px solid var(--border); cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:0.8rem; transition:0.2s; }
+        .btn-sm:hover { opacity:0.85; transform:translateY(-1px); }
         .btn-sm.sim { color:var(--info); border-color:rgba(34,211,238,0.3); background:rgba(34,211,238,0.06); }
         .btn-sm.quiz { color:var(--warning); }
         .btn-sm.plano { color:var(--success); }
-        .btn-primary { background:var(--grad-primary); border:none; padding:0.55rem 1.2rem; border-radius:var(--radius-sm); font-weight:700; color:white; cursor:pointer; }
-        .sim-panel, .plano-panel { background:var(--surface); border-radius:var(--radius); margin-top:1.5rem; display:none; }
-        .sim-panel.active, .plano-panel.active { display:block; }
-        .panel-header { display:flex; justify-content:space-between; padding:0.875rem 1.25rem; background:var(--surface-2); border-bottom:1px solid var(--border); font-weight:600; }
-        .sim-canvas { background:#04060D; width:100%; min-height:380px; padding:1rem; }
+        .btn-primary { background:var(--grad-primary); border:none; padding:0.55rem 1.2rem; border-radius:var(--radius-sm); font-weight:700; color:white; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:0.2s; }
+        .btn-primary:hover { opacity:0.85; }
+        .plano-panel { background:var(--surface); border-radius:var(--radius); margin-top:1.5rem; display:none; }
+        .plano-panel.active { display:block; }
+        .panel-header { display:flex; justify-content:space-between; align-items:center; padding:0.875rem 1.25rem; background:var(--surface-2); border-bottom:1px solid var(--border); font-weight:600; border-radius:var(--radius) var(--radius) 0 0; }
+
+        /* ========================================================
+           POP-UP DO SIMULADOR
+           ======================================================== */
+        .sim-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: transparent;
+        }
+        .sim-popup-overlay.active { display: block; }
+
+        .sim-popup {
+            position: fixed;
+            z-index: 1000;
+            width: min(520px, 96vw);
+            background: var(--surface);
+            border: 1px solid var(--border-2);
+            border-radius: 1.25rem;
+            box-shadow: 0 32px 64px -8px rgba(0,0,0,0.85), 0 0 0 1px rgba(79,142,247,0.12);
+            overflow: hidden;
+            animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            transform-origin: top center;
+        }
+        @keyframes popIn {
+            from { opacity:0; transform: scale(0.88) translateY(-10px); }
+            to   { opacity:1; transform: scale(1) translateY(0); }
+        }
+
+        .sim-popup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--surface-2);
+            border-bottom: 1px solid var(--border);
+        }
+        .sim-popup-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: var(--grad-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .sim-popup-close {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: var(--surface-3);
+            border: 1px solid var(--border-2);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            transition: 0.15s;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .sim-popup-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* Imagem do contexto — com fallback robusto */
+        .sim-popup-image-wrap {
+            position: relative;
+            height: 190px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #0D1528 0%, #1E2740 100%);
+        }
+        .sim-popup-image-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s, opacity 0.3s;
+            opacity: 0;
+        }
+        .sim-popup-image-wrap img.loaded { opacity: 1; }
+        .sim-popup-image-wrap:hover img { transform: scale(1.04); }
+
+        /* Placeholder SVG inline exibido enquanto imagem carrega */
+        .sim-popup-img-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: var(--text-tertiary);
+            font-size: 2rem;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .sim-popup-img-placeholder span { font-size: 0.72rem; font-family: 'JetBrains Mono'; color: var(--text-tertiary); }
+
+        .sim-popup-image-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 0.6rem 0.875rem;
+            background: linear-gradient(to top, rgba(8,11,18,0.92) 0%, transparent 100%);
+            font-size: 0.72rem;
+            color: rgba(232,238,248,0.75);
+            font-style: italic;
+        }
+        .sim-popup-image-tag {
+            position: absolute;
+            top: 0.6rem; right: 0.6rem;
+            background: rgba(79,142,247,0.18);
+            border: 1px solid rgba(79,142,247,0.3);
+            color: var(--primary);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.55rem;
+            border-radius: 2rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .sim-popup-body { padding: 1rem 1.125rem 1.125rem; }
+        .sim-inner { color: var(--text); }
+        .sim-inner h3 { font-size: 0.95rem; margin-bottom: 0.6rem; color: var(--info); }
+        .sim-inner p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+        .sim-inner .sim-result { font-family:'JetBrains Mono'; font-size:1.4rem; color:var(--primary); margin:0.75rem 0; text-align:center; }
+        .sim-inner button { margin-top:0.5rem; }
+
+        /* ---- Explorador de Valor Posicional ---- */
+        .explorador-wrap { margin-top: 0.75rem; }
+        .explorador-label { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+        .explorador-inputs { display: flex; gap: 0.4rem; align-items: flex-end; margin-bottom: 0.6rem; }
+        .explorador-col { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+        .explorador-col label { font-size: 0.62rem; color: var(--text-secondary); font-family: 'JetBrains Mono'; text-transform: uppercase; }
+        .explorador-col input {
+            width: 44px; height: 44px;
+            background: var(--surface-3);
+            border: 1px solid var(--border-2);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'JetBrains Mono';
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: 0.15s;
+        }
+        .explorador-col input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79,142,247,0.25); }
+        .explorador-sep { font-size: 1.1rem; color: var(--text-tertiary); padding-bottom: 10px; }
+        .explorador-result-box {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.6rem 0.875rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .explorador-num { font-family: 'JetBrains Mono'; font-size: 1.3rem; color: var(--primary); font-weight: 700; }
+        .explorador-breakdown { font-size: 0.75rem; color: var(--text-secondary); line-height: 1.5; }
+        .explorador-blocks { display: flex; gap: 0.3rem; flex-wrap: wrap; align-items: flex-end; margin-top: 0.5rem; }
+        .block-unit  { width:10px; height:10px; background:var(--success); border-radius:2px; }
+        .block-dez   { width:10px; height:60px; background:var(--info); border-radius:2px; }
+        .block-cent  { width:60px; height:60px; background:var(--warning); border-radius:4px; opacity:0.85; }
+        .block-mil   { width:60px; height:60px; background:var(--secondary); border-radius:6px; opacity:0.9; box-shadow:2px 2px 0 rgba(155,111,247,0.4); }
+        /* ---------------------------------------- */
+
+        /* Arena e Quiz */
         .arena-card { background:var(--surface); border-radius:var(--radius); overflow:hidden; }
         .arena-header-bg { position:relative; height:130px; background:linear-gradient(160deg,#060A14,#0D1528); }
         .arena-hud { position:absolute; inset:0; display:flex; justify-content:space-between; padding:0.875rem 1.25rem; }
-        .arena-score-box { background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border-radius:0.625rem; padding:0.4rem 0.75rem; text-align:center; }
-        .arena-timer-box { width:44px; height:44px; position:relative; }
+        .arena-badge { font-size:0.75rem; font-weight:700; color:var(--warning); }
+        .arena-score-box { background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border-radius:0.625rem; padding:0.4rem 0.75rem; text-align:center; font-size:0.7rem; }
+        .arena-progress-bar { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(255,255,255,0.06); }
         .arena-progress-fill { height:100%; background:var(--grad-primary); transition:width 0.3s; }
         .arena-body { padding:1.25rem 1.5rem; }
         .arena-opts { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
-        .arena-opt { padding:0.7rem 1rem; border-radius:var(--radius-sm); background:var(--surface-2); border:1.5px solid var(--border); cursor:pointer; display:flex; align-items:center; gap:0.6rem; }
+        .arena-opt { padding:0.7rem 1rem; border-radius:var(--radius-sm); background:var(--surface-2); border:1.5px solid var(--border); cursor:pointer; display:flex; align-items:center; gap:0.6rem; font-family:'Space Grotesk',sans-serif; font-size:0.85rem; transition:0.15s; }
+        .arena-opt:not(.disabled):hover { border-color: var(--primary); background: rgba(79,142,247,0.08); }
+        .arena-opt-letter { font-weight:700; color:var(--text-secondary); font-size:0.75rem; }
         .arena-opt.correct { background:rgba(34,201,122,0.12); border-color:var(--success); color:var(--success); }
         .arena-opt.wrong { background:rgba(242,92,92,0.12); border-color:var(--danger); color:var(--danger); }
+        .arena-opt.disabled { cursor:not-allowed; opacity:0.7; }
         .arena-feedback { margin-top:0.75rem; font-size:0.85rem; font-weight:600; }
-        .quiz-option { padding:0.75rem 1rem; background:var(--surface-2); border-radius:var(--radius-sm); margin-bottom:0.5rem; cursor:pointer; }
+        .quiz-option { padding:0.75rem 1rem; background:var(--surface-2); border-radius:var(--radius-sm); margin-bottom:0.5rem; cursor:pointer; transition:0.15s; font-size:0.9rem; }
+        .quiz-option:not(.disabled):hover { background:var(--surface-3); }
         .quiz-option.correct { background:rgba(34,201,122,0.12); border-color:var(--success); color:var(--success); }
         .quiz-option.wrong { background:rgba(242,92,92,0.12); border-color:var(--danger); color:var(--danger); }
+        .quiz-option.disabled { cursor:not-allowed; }
         .explicacao-box { background:rgba(34,211,238,0.08); border-left:4px solid var(--info); padding:0.75rem; margin-top:0.75rem; border-radius:8px; font-size:0.8rem; color:var(--text-secondary); line-height:1.4; }
-        .toast { position:fixed; bottom:1.75rem; right:1.75rem; background:var(--surface-2); border-radius:var(--radius-sm); padding:0.65rem 1rem; transform:translateY(120px); transition:0.3s; z-index:1000; }
+        .toast { position:fixed; bottom:1.75rem; right:1.75rem; background:var(--surface-2); border-radius:var(--radius-sm); padding:0.65rem 1rem; transform:translateY(120px); transition:0.3s; z-index:9999; border:1px solid var(--border-2); }
         .toast.show { transform:translateY(0); opacity:1; }
-        @media(max-width:720px){ .arena-opts { grid-template-columns:1fr; } }
+        .empty-state { text-align:center; padding:2rem; color:var(--text-secondary); }
+        @media(max-width:720px){ .arena-opts { grid-template-columns:1fr; } .sim-popup { width:96vw; } }
     </style>
 </head>
 <body>
@@ -92,31 +266,272 @@
     <div class="user-stats"><div class="stat-badge">⭐ <span id="xpTotal">0</span> XP</div></div>
 </nav>
 
-<div class="page active" id="page-home"><div class="card"><h2>🎓 Currículo Paulista - Matemática EF/EM</h2><p>Selecione sua série: cada turma possui 10 questões na Arena, 10 no Quiz com explicações detalhadas, e simulador 3D interativo.</p></div>
-<div class="series-selector" id="serieSelectorHome"></div>
-<div class="section-title">Aprendizagens Essenciais</div><div class="ae-grid" id="aeGrid"></div>
-<div id="simGlobalPanel" class="sim-panel"><div class="panel-header"><span id="simTitle">Simulador</span><button class="btn-sm" onclick="closeGlobalSim()">✕ Fechar</button></div><div class="sim-canvas" id="simCanvasContainer"></div></div>
-<div id="planoGlobalPanel" class="plano-panel"><div class="panel-header"><span id="planoTitle">Plano</span><button class="btn-sm" onclick="closeGlobalPlano()">Fechar</button></div><div id="planoContent"></div></div></div>
+<!-- POP-UP GLOBAL DO SIMULADOR -->
+<div class="sim-popup-overlay" id="simPopupOverlay" onclick="closeSimPopup(event)"></div>
+<div class="sim-popup" id="simPopup" style="display:none;">
+    <div class="sim-popup-header">
+        <span class="sim-popup-title" id="simPopupTitle">Simulador</span>
+        <button class="sim-popup-close" onclick="closeSimPopup()">✕</button>
+    </div>
+    <div class="sim-popup-image-wrap" id="simPopupImageWrap">
+        <div class="sim-popup-img-placeholder" id="simPopupPlaceholder">
+            <div id="simPopupPlaceholderIcon">📐</div>
+            <span>Carregando imagem…</span>
+        </div>
+        <img id="simPopupImage" src="" alt="Contexto real" loading="lazy">
+        <div class="sim-popup-image-tag" id="simPopupImageTag">Contexto Real</div>
+        <div class="sim-popup-image-caption" id="simPopupImageCaption"></div>
+    </div>
+    <div class="sim-popup-body" id="simPopupBody"></div>
+</div>
 
-<div class="page" id="page-simuladores"><div class="series-selector" id="serieSelectorSim"></div><div class="section-title">Simuladores Interativos (10 por série)</div><div class="ae-grid" id="simuladoresGrid"></div><div id="simPagePanel" class="sim-panel"><div class="panel-header"><span id="simPageTitle"></span><button onclick="document.getElementById('simPagePanel').classList.remove('active')">✕</button></div><div class="sim-canvas" id="simPageContainer"></div></div></div>
+<!-- PÁGINAS -->
+<div class="page active" id="page-home">
+    <div class="card"><h2>🎓 Currículo Paulista - Matemática EF/EM</h2><p>Selecione sua série: cada turma possui 10 questões na Arena, 10 no Quiz com explicações detalhadas, e simulador 3D interativo.</p></div>
+    <div class="series-selector" id="serieSelectorHome"></div>
+    <div class="section-title">Aprendizagens Essenciais</div>
+    <div class="ae-grid" id="aeGrid"></div>
+    <div id="planoGlobalPanel" class="plano-panel">
+        <div class="panel-header"><span id="planoTitle">Plano</span><button class="btn-sm" onclick="closeGlobalPlano()">Fechar</button></div>
+        <div id="planoContent" style="padding:1.25rem;"></div>
+    </div>
+</div>
 
-<div class="page" id="page-arena"><div class="series-selector" id="serieSelectorArena"></div>
-<div class="arena-card"><div class="arena-header-bg"><div class="arena-hud"><div><div class="arena-badge">⚡ Arena (10 desafios)</div><div id="arenaSerieLabel"></div></div><div><div class="arena-score-box"><div>PONTOS</div><div id="arenaScoreVal">0</div></div><div class="arena-score-box"><div>ACERTOS</div><div id="arenaAcertos">0/0</div></div></div></div><div class="arena-progress-bar"><div class="arena-progress-fill" id="arenaProgressFill" style="width:0%"></div></div></div>
-<div class="arena-body" id="arenaBody"><div id="arenaEmptyState"><div>⚡</div><div>Selecione uma turma</div></div><div id="arenaQuestionArea" style="display:none;"><div id="arenaQNum"></div><div id="arenaQText"></div><div class="arena-opts" id="arenaOptions"></div><div class="arena-feedback" id="arenaFeedback"></div><button class="btn-primary" id="arenaNextBtn" style="display:none;" onclick="nextArenaQuestion()">Próximo →</button></div><div id="arenaResultArea" style="display:none;text-align:center;"></div></div></div></div>
+<div class="page" id="page-simuladores">
+    <div class="series-selector" id="serieSelectorSim"></div>
+    <div class="section-title">Simuladores Interativos (10 por série)</div>
+    <div class="ae-grid" id="simuladoresGrid"></div>
+</div>
 
-<div class="page" id="page-quiz"><div class="series-selector" id="serieSelectorQuiz"></div><div class="section-title">Quiz com 10 questões + Explicações Detalhadas</div><div style="background:var(--surface);border-radius:var(--radius);"><div class="panel-header"><span id="quizHeader">Questão</span><span id="quizTimer">⏱ 0:00</span></div><div style="padding:1.5rem;" id="quizBody"></div><div style="padding:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;"><span>🏆 Pontuação: <strong id="quizScore">0</strong></span><button class="btn-primary" id="quizNextBtn" onclick="nextQuizQuestion()" style="display:none;">Próxima →</button></div></div></div>
+<div class="page" id="page-arena">
+    <div class="series-selector" id="serieSelectorArena"></div>
+    <div class="arena-card">
+        <div class="arena-header-bg">
+            <div class="arena-hud">
+                <div><div class="arena-badge">⚡ Arena (10 desafios)</div><div id="arenaSerieLabel"></div></div>
+                <div style="display:flex;gap:0.5rem;">
+                    <div class="arena-score-box"><div>PONTOS</div><div id="arenaScoreVal">0</div></div>
+                    <div class="arena-score-box"><div>ACERTOS</div><div id="arenaAcertos">0/0</div></div>
+                </div>
+            </div>
+            <div class="arena-progress-bar"><div class="arena-progress-fill" id="arenaProgressFill" style="width:0%"></div></div>
+        </div>
+        <div class="arena-body" id="arenaBody">
+            <div id="arenaEmptyState" class="empty-state"><div>⚡</div><div>Selecione uma turma</div></div>
+            <div id="arenaQuestionArea" style="display:none;">
+                <div id="arenaQNum" style="font-size:0.75rem;color:var(--text-secondary);margin-bottom:0.5rem;"></div>
+                <div id="arenaQText" style="font-weight:600;margin-bottom:1rem;"></div>
+                <div class="arena-opts" id="arenaOptions"></div>
+                <div class="arena-feedback" id="arenaFeedback"></div>
+                <button class="btn-primary" id="arenaNextBtn" style="display:none;margin-top:1rem;" onclick="nextArenaQuestion()">Próximo →</button>
+            </div>
+            <div id="arenaResultArea" style="display:none;text-align:center;"></div>
+        </div>
+    </div>
+</div>
 
-<div class="page" id="page-professor"><div class="series-selector" id="serieSelectorProf"></div><div class="section-title">Estratégias Metodológicas</div><div class="ae-grid" id="profGrid"></div><div id="simProfPanel" class="sim-panel"><div class="panel-header"><span id="simProfTitle"></span><button onclick="document.getElementById('simProfPanel').classList.remove('active')">✕</button></div><div class="sim-canvas" id="simProfContainer"></div></div></div>
+<div class="page" id="page-quiz">
+    <div class="series-selector" id="serieSelectorQuiz"></div>
+    <div class="section-title">Quiz com 10 questões + Explicações Detalhadas</div>
+    <div style="background:var(--surface);border-radius:var(--radius);">
+        <div class="panel-header"><span id="quizHeader">Questão</span><span id="quizTimer">⏱ 0:00</span></div>
+        <div style="padding:1.5rem;" id="quizBody"></div>
+        <div style="padding:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span>🏆 Pontuação: <strong id="quizScore">0</strong></span>
+            <button class="btn-primary" id="quizNextBtn" onclick="nextQuizQuestion()" style="display:none;">Próxima →</button>
+        </div>
+    </div>
+</div>
+
+<div class="page" id="page-professor">
+    <div class="series-selector" id="serieSelectorProf"></div>
+    <div class="section-title">Estratégias Metodológicas</div>
+    <div class="ae-grid" id="profGrid"></div>
+</div>
+
 <div class="toast" id="toast"><span id="toastMsg"></span><span id="toastText"></span></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ============================================================
-// BANCO DE DADOS COMPLETO: 10 questões para cada série (Quiz e Arena)
-// Explicações didáticas em TODAS as alternativas (campo expl)
+// IMAGENS — usando Wikimedia Commons (domínio público, CORS OK)
+// + fallback para SVG data-URI inline se a imagem falhar
+// ============================================================
+const simImages = {
+    geometria3d: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Camponotus_flavomarginatus_ant.jpg/640px-Camponotus_flavomarginatus_ant.jpg',
+        // Imagem alternativa confiável de geometria
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Cube-face-first.svg/480px-Cube-face-first.svg.png',
+        caption: 'Formas geométricas 3D presentes na arquitetura moderna e engenharia.',
+        tag: '📐 Geometria 3D',
+        icon: '📦'
+    },
+    decimal: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Money-flower.jpg/640px-Money-flower.jpg',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Indonesian_rupiah_100000_front_2014.jpg/640px-Indonesian_rupiah_100000_front_2014.jpg',
+        caption: 'O sistema decimal organiza a contagem do dinheiro, medidas e dados numéricos.',
+        tag: '🧮 Sistema Decimal',
+        icon: '🔢'
+    },
+    reta: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Simple_ruler.jpg/640px-Simple_ruler.jpg',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Ruler_1.jpg/640px-Ruler_1.jpg',
+        caption: 'Retas numéricas aparecem em termômetros, réguas e escalas de medição.',
+        tag: '📏 Reta Numérica',
+        icon: '📏'
+    },
+    operacoes: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/480px-No_image_available.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Multiplication_Sign.svg/480px-Multiplication_Sign.svg.png',
+        caption: 'Operações matemáticas são usadas em compras, receitas e engenharia.',
+        tag: '➕ Operações',
+        icon: '➗'
+    },
+    multiplos: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Clock_in_12_hour_format.jpg/480px-Clock_in_12_hour_format.jpg',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Clock_simple_7.svg/480px-Clock_simple_7.svg.png',
+        caption: 'MMC é essencial para sincronizar semáforos, turnos de trabalho e ciclos.',
+        tag: '🔵 Múltiplos/MMC',
+        icon: '🔵'
+    },
+    inteiros: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Thermometer_CF.svg/240px-Thermometer_CF.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Thermometer_CF.svg/240px-Thermometer_CF.svg.png',
+        caption: 'Temperaturas negativas e positivas representam números inteiros no cotidiano.',
+        tag: '🌡️ Números Inteiros',
+        icon: '🌡️'
+    },
+    fracao: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Pizza_wariatka_cr.jpg/640px-Pizza_wariatka_cr.jpg',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Pizza_wariatka_cr.jpg/640px-Pizza_wariatka_cr.jpg',
+        caption: 'Frações aparecem em receitas culinárias, dosagens e divisão de porções.',
+        tag: '🥧 Frações',
+        icon: '🍕'
+    },
+    potencia: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Bacterial_morphology_diagram.svg/480px-Bacterial_morphology_diagram.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Bacterial_morphology_diagram.svg/480px-Bacterial_morphology_diagram.svg.png',
+        caption: 'Potenciação descreve o crescimento exponencial de bactérias, juros e dados.',
+        tag: '🔋 Potenciação',
+        icon: '🦠'
+    },
+    sistema: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Linear_graph.svg/480px-Linear_graph.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Linear_graph.svg/480px-Linear_graph.svg.png',
+        caption: 'Sistemas de equações são usados em logística, mistura de substâncias e redes.',
+        tag: '📈 Sistemas',
+        icon: '📈'
+    },
+    semelhanca: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Triangles_%28PSF%29.svg/480px-Triangles_%28PSF%29.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Triangles_%28PSF%29.svg/480px-Triangles_%28PSF%29.svg.png',
+        caption: 'Semelhança de triângulos é base da cartografia, fotografia e construção civil.',
+        tag: '📐 Semelhança',
+        icon: '📐'
+    },
+    pitagoras: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Pythagorean.svg/480px-Pythagorean.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Pythagorean.svg/480px-Pythagorean.svg.png',
+        caption: 'O Teorema de Pitágoras é usado em cálculos de telhados, pontes e trilhas.',
+        tag: '📐 Pitágoras',
+        icon: '📐'
+    },
+    quadratica: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Parabola_with_focus_and_directrix.svg/480px-Parabola_with_focus_and_directrix.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Parabola_with_focus_and_directrix.svg/480px-Parabola_with_focus_and_directrix.svg.png',
+        caption: 'Funções quadráticas modelam trajetórias de projéteis, arcos e parábolas reais.',
+        tag: '🏹 Função Quadrática',
+        icon: '🏹'
+    },
+    trigonometria: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Circle-trig6.svg/480px-Circle-trig6.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Circle-trig6.svg/480px-Circle-trig6.svg.png',
+        caption: 'Trigonometria é usada em navegação, astronomia e engenharia de antenas.',
+        tag: '📡 Trigonometria',
+        icon: '📡'
+    },
+    afim: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Linear_Function_Graph.svg/480px-Linear_Function_Graph.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Linear_Function_Graph.svg/480px-Linear_Function_Graph.svg.png',
+        caption: 'Funções afins modelam tarifas de táxi, consumo de combustível e salários.',
+        tag: '📈 Função Afim',
+        icon: '📈'
+    },
+    exponencial: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Exponential-e.svg/480px-Exponential-e.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Exponential-e.svg/480px-Exponential-e.svg.png',
+        caption: 'Crescimento exponencial modela pandemias, investimentos e radioatividade.',
+        tag: '🦠 Exponencial',
+        icon: '📊'
+    },
+    ciclo: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Sin_cos_tan.svg/480px-Sin_cos_tan.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Sin_cos_tan.svg/480px-Sin_cos_tan.svg.png',
+        caption: 'O ciclo trigonométrico descreve ondas sonoras, marés e movimento pendular.',
+        tag: '🌊 Ciclo Trigonométrico',
+        icon: '🌊'
+    },
+    progressao: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Fibonacci_spiral_34.svg/480px-Fibonacci_spiral_34.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Fibonacci_spiral_34.svg/480px-Fibonacci_spiral_34.svg.png',
+        caption: 'PA e PG aparecem em escadas, juros compostos e sequências na natureza.',
+        tag: '🔢 Progressões',
+        icon: '🔢'
+    },
+    analitica: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Cartesian-coordinate-system.svg/480px-Cartesian-coordinate-system.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Cartesian-coordinate-system.svg/480px-Cartesian-coordinate-system.svg.png',
+        caption: 'Geometria analítica é a base dos GPS, mapas e gráficos de navegação.',
+        tag: '🗺️ Geom. Analítica',
+        icon: '🗺️'
+    },
+    graficos: {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Bar_chart_with_Gaussian_curve.svg/480px-Bar_chart_with_Gaussian_curve.svg.png',
+        alt: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Bar_chart_with_Gaussian_curve.svg/480px-Bar_chart_with_Gaussian_curve.svg.png',
+        caption: 'Gráficos e estatísticas estão presentes em jornais, pesquisas e ciência.',
+        tag: '📊 Gráficos',
+        icon: '📊'
+    }
+};
+
+// Carrega imagem com fallback gracioso
+function loadSimImage(tipo) {
+    const info = simImages[tipo] || simImages.geometria3d;
+    const imgEl = document.getElementById('simPopupImage');
+    const placeholder = document.getElementById('simPopupPlaceholder');
+    const placeholderIcon = document.getElementById('simPopupPlaceholderIcon');
+
+    placeholderIcon.textContent = info.icon || '📐';
+    placeholder.querySelector('span').textContent = 'Carregando…';
+    imgEl.classList.remove('loaded');
+    imgEl.src = '';
+
+    const tryLoad = (src, fallbackSrc) => {
+        const tmp = new Image();
+        tmp.onload = () => {
+            imgEl.src = src;
+            imgEl.classList.add('loaded');
+            placeholder.style.opacity = '0';
+        };
+        tmp.onerror = () => {
+            if (fallbackSrc && src !== fallbackSrc) {
+                tryLoad(fallbackSrc, null);
+            } else {
+                // Mostra placeholder bonito com ícone
+                placeholder.querySelector('span').textContent = info.caption.slice(0, 40) + '…';
+                placeholderIcon.style.fontSize = '3rem';
+            }
+        };
+        tmp.src = src;
+    };
+
+    tryLoad(info.url, info.alt);
+}
+
+// ============================================================
+// BANCO DE DADOS
 // ============================================================
 function gerarQuestoesPorSerie(serie) {
-    // Base comum com explicações ricas, adaptadas por nível
     const questoesBase = [
         { q: "Calcule 25 + 37.", opts: ["52","62","72","58"], correct: 1, expl: "25 + 30 = 55; 55 + 7 = 62. Portanto, 25+37=62." },
         { q: "Qual é o valor de 3 × 8?", opts: ["24","21","27","32"], correct: 0, expl: "3 × 8 significa somar 8 três vezes: 8+8+8 = 24." },
@@ -129,11 +544,9 @@ function gerarQuestoesPorSerie(serie) {
         { q: "O valor de 2³ é:", opts: ["6","8","9","16"], correct: 1, expl: "2³ = 2×2×2 = 8." },
         { q: "Perímetro de um quadrado de lado 5 cm:", opts: ["10 cm","15 cm","20 cm","25 cm"], correct: 2, expl: "Perímetro = 4 × lado = 4×5 = 20 cm." }
     ];
-    // Adapta para cada série (mantém coerência)
     return questoesBase.map(q => ({ ...q, expl: q.expl + (serie >= 7 ? " (Conceito fundamental para essa série)." : "") }));
 }
 
-// Dados completos para cada série (10 simuladores, 10 questões)
 const seriesData = {
     ef6: { name:"6º Ano - EF", aes:[{code:"EF06MA01",title:"Sistema Decimal",sim:"decimal",quiz:true},{code:"EF06MA02",title:"Reta Numérica",sim:"reta",quiz:true},{code:"EF06MA03",title:"Operações",sim:"operacoes",quiz:true},{code:"EF06MA06",title:"Múltiplos",sim:"multiplos",quiz:true}],
         simuladores:["decimal","reta","operacoes","multiplos","geometria3d","graficos","inteiros","fracao","potencia","pitagoras"],
@@ -159,112 +572,405 @@ const seriesData = {
 };
 
 // ============================================================
-// SIMULADOR 3D (Cubo, Esfera, Cilindro) - disponível para todos
+// EXPLORADOR DE VALOR POSICIONAL (usado no simulador decimal)
+// ============================================================
+function renderExplorador(container) {
+    container.innerHTML = `
+    <div class="sim-inner">
+        <h3>🧮 Explorador de Valor Posicional</h3>
+        <p>Digite os dígitos para decompor o número:</p>
+        <div class="explorador-wrap">
+            <div class="explorador-inputs" id="explInputs">
+                <div class="explorador-col">
+                    <label>Milhar</label>
+                    <input type="number" id="exMil" min="0" max="9" value="2" oninput="atualizarExplorador()">
+                </div>
+                <div class="explorador-sep">.</div>
+                <div class="explorador-col">
+                    <label>Centena</label>
+                    <input type="number" id="exCen" min="0" max="9" value="4" oninput="atualizarExplorador()">
+                </div>
+                <div class="explorador-sep">.</div>
+                <div class="explorador-col">
+                    <label>Dezena</label>
+                    <input type="number" id="exDez" min="0" max="9" value="5" oninput="atualizarExplorador()">
+                </div>
+                <div class="explorador-sep">.</div>
+                <div class="explorador-col">
+                    <label>Unidade</label>
+                    <input type="number" id="exUni" min="0" max="9" value="7" oninput="atualizarExplorador()">
+                </div>
+            </div>
+            <div class="explorador-result-box" id="explResult"></div>
+            <div class="explorador-blocks" id="explBlocks" style="margin-top:0.6rem;min-height:70px;"></div>
+        </div>
+    </div>`;
+    atualizarExplorador();
+}
+
+function atualizarExplorador() {
+    const mil = parseInt(document.getElementById('exMil')?.value) || 0;
+    const cen = parseInt(document.getElementById('exCen')?.value) || 0;
+    const dez = parseInt(document.getElementById('exDez')?.value) || 0;
+    const uni = parseInt(document.getElementById('exUni')?.value) || 0;
+
+    // Clamp 0–9
+    const m = Math.max(0, Math.min(9, mil));
+    const c = Math.max(0, Math.min(9, cen));
+    const d = Math.max(0, Math.min(9, dez));
+    const u = Math.max(0, Math.min(9, uni));
+
+    const total = m*1000 + c*100 + d*10 + u;
+    const fmt = total.toLocaleString('pt-BR');
+
+    const resultBox = document.getElementById('explResult');
+    if (!resultBox) return;
+
+    let decoPartes = [];
+    if (m) decoPartes.push(`<span style="color:var(--secondary)">${m}×1000</span>`);
+    if (c) decoPartes.push(`<span style="color:var(--warning)">${c}×100</span>`);
+    if (d) decoPartes.push(`<span style="color:var(--info)">${d}×10</span>`);
+    if (u) decoPartes.push(`<span style="color:var(--success)">${u}×1</span>`);
+    if (!decoPartes.length) decoPartes.push('<span style="color:var(--text-tertiary)">0</span>');
+
+    resultBox.innerHTML = `
+        <div class="explorador-num">${fmt}</div>
+        <div class="explorador-breakdown">${decoPartes.join(' + ')} = <strong style="color:var(--primary)">${fmt}</strong></div>`;
+
+    // Blocos visuais (limitados para caber na tela)
+    const blocksEl = document.getElementById('explBlocks');
+    if (!blocksEl) return;
+    let html = '';
+    // Milhares (cubos roxos) — max 9
+    for (let i=0; i<m; i++) html += `<div class="block-mil" title="${(i+1)}° milhar" style="background:var(--secondary)"></div>`;
+    // Centenas (quadrados laranja) — max 9
+    for (let i=0; i<c; i++) html += `<div class="block-cent" title="${(i+1)}ª centena" style="background:var(--warning)"></div>`;
+    // Dezenas (barras azuis) — max 9
+    for (let i=0; i<d; i++) html += `<div class="block-dez" title="${(i+1)}ª dezena" style="background:var(--info)"></div>`;
+    // Unidades (quadradinhos verdes) — max 9
+    for (let i=0; i<u; i++) html += `<div class="block-unit" title="${(i+1)}ª unidade" style="background:var(--success)"></div>`;
+    if (!html) html = `<span style="font-size:0.75rem;color:var(--text-tertiary)">Digite dígitos acima para ver os blocos.</span>`;
+    blocksEl.innerHTML = html;
+}
+
+// ============================================================
+// SIMULADORES
 // ============================================================
 const simulators = {};
+
 simulators.geometria3d = function(container) {
-    container.innerHTML = `<div id="threeContainer" style="width:100%;height:380px;background:#04060D;"></div><div class="explicacao-box" style="margin-top:12px;">🧊 Figuras 3D: Cubo (azul), Esfera (verde), Cilindro (laranja). Arraste o mouse para girar a câmera e visualize formas geométricas espaciais.</div>`;
-    const threeDiv = document.getElementById('threeContainer');
-    const scene = new THREE.Scene(); scene.background = new THREE.Color(0x04060D);
-    const camera = new THREE.PerspectiveCamera(45, threeDiv.clientWidth/threeDiv.clientHeight, 0.1, 1000);
-    camera.position.set(3,2,5); camera.lookAt(0,0,0);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(threeDiv.clientWidth, threeDiv.clientHeight);
-    threeDiv.appendChild(renderer.domElement);
-    const ambientLight = new THREE.AmbientLight(0x404060);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-    dirLight.position.set(2,5,3);
-    scene.add(dirLight);
-    const backLight = new THREE.PointLight(0x4466ff, 0.3);
-    backLight.position.set(-2,1,-3);
-    scene.add(backLight);
-    const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({ color: 0x4F8EF7, metalness:0.3 }));
-    cube.position.set(-1.2, 0.2, 0);
-    scene.add(cube);
-    const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshStandardMaterial({ color: 0x22C97A, emissive:0x114422 }));
-    sphere.position.set(0, 0.2, 0.8);
-    scene.add(sphere);
-    const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,32), new THREE.MeshStandardMaterial({ color: 0xF5A623 }));
-    cylinder.position.set(1.2, 0.2, -0.3);
-    scene.add(cylinder);
-    const axesHelper = new THREE.AxesHelper(2);
-    axesHelper.material.transparent = true; axesHelper.material.opacity = 0.15;
-    scene.add(axesHelper);
-    let isDragging = false, lastX = 0, lastY = 0;
-    threeDiv.addEventListener('mousedown', (e) => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
-    window.addEventListener('mouseup', () => isDragging = false);
-    window.addEventListener('mousemove', (e) => {
-        if(!isDragging) return;
-        const dx = e.clientX - lastX, dy = e.clientY - lastY;
-        camera.position.x += dx * 0.01;
-        camera.position.y -= dy * 0.01;
-        camera.lookAt(0,0,0);
-        lastX = e.clientX; lastY = e.clientY;
-    });
-    function animate() { requestAnimationFrame(animate); cube.rotation.y += 0.008; sphere.rotation.x += 0.005; cylinder.rotation.z += 0.007; renderer.render(scene, camera); }
-    animate();
-    window.addEventListener('resize', () => { camera.aspect = threeDiv.clientWidth/threeDiv.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(threeDiv.clientWidth, threeDiv.clientHeight); });
+    container.innerHTML = `<div id="threeContainer" style="width:100%;height:200px;background:#04060D;border-radius:8px;overflow:hidden;"></div><div class="explicacao-box" style="margin-top:10px;">🧊 Figuras 3D: Cubo (azul), Esfera (verde), Cilindro (laranja). Arraste para girar!</div>`;
+    setTimeout(()=>{
+        const threeDiv = document.getElementById('threeContainer');
+        if(!threeDiv) return;
+        const scene = new THREE.Scene(); scene.background = new THREE.Color(0x04060D);
+        const camera = new THREE.PerspectiveCamera(45, threeDiv.clientWidth/threeDiv.clientHeight, 0.1, 1000);
+        camera.position.set(3,2,5); camera.lookAt(0,0,0);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(threeDiv.clientWidth, threeDiv.clientHeight);
+        threeDiv.appendChild(renderer.domElement);
+        scene.add(new THREE.AmbientLight(0x404060));
+        const dl = new THREE.DirectionalLight(0xffffff,1); dl.position.set(2,5,3); scene.add(dl);
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:0x4F8EF7,metalness:0.3}));
+        cube.position.set(-1.2,0.2,0); scene.add(cube);
+        const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.6,32,32), new THREE.MeshStandardMaterial({color:0x22C97A}));
+        sphere.position.set(0,0.2,0.8); scene.add(sphere);
+        const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,32), new THREE.MeshStandardMaterial({color:0xF5A623}));
+        cyl.position.set(1.2,0.2,-0.3); scene.add(cyl);
+        let drag=false, lx=0, ly=0;
+        threeDiv.addEventListener('mousedown',(e)=>{drag=true;lx=e.clientX;ly=e.clientY;});
+        window.addEventListener('mouseup',()=>drag=false);
+        window.addEventListener('mousemove',(e)=>{ if(!drag)return; camera.position.x+=(e.clientX-lx)*0.01; camera.position.y-=(e.clientY-ly)*0.01; camera.lookAt(0,0,0); lx=e.clientX; ly=e.clientY; });
+        (function animate(){ requestAnimationFrame(animate); cube.rotation.y+=0.008; sphere.rotation.x+=0.005; cyl.rotation.z+=0.007; renderer.render(scene,camera); })();
+    }, 50);
 };
 
-// Demais simuladores (versões simplificadas mas funcionais)
-simulators.decimal = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🧮 Material Dourado</h3><p>Composição: 2457 = 2 milhares + 4 centenas + 5 dezenas + 7 unidades.</p><div class="sim-result">2.547</div><button class="btn-primary" onclick="alert('Explore valores posicionais com blocos virtuais.')">Explorar</button></div>`; };
-simulators.reta = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📏 Reta Numérica</h3><canvas id="retaCanvas" width="500" height="80"></canvas><script>setTimeout(()=>{let ctx=document.getElementById('retaCanvas')?.getContext('2d'); if(ctx){ctx.fillStyle='#04060D';ctx.fillRect(0,0,500,80);ctx.strokeStyle='white';ctx.beginPath();ctx.moveTo(20,40);ctx.lineTo(480,40);ctx.stroke();for(let i=-10;i<=10;i++){ctx.fillText(i,250+i*20,55);}}},50);<\/script></div>`; };
-simulators.operacoes = (c) => { c.innerHTML = `<div class="sim-inner"><h3>➕ Operações</h3><div>Adição: 234+567=801</div><div>Subtração: 789-345=444</div><div>Multiplicação: 12×8=96</div><div>Divisão: 144÷12=12</div></div>`; };
-simulators.multiplos = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔵 Múltiplos</h3><p>MMC(4,6)=12 | MDC(12,18)=6 | Primos: 2,3,5,7,11...</p></div>`; };
-simulators.inteiros = (c) => { c.innerHTML = `<div class="sim-inner"><h3>➖ Inteiros</h3><p>(-5)+8=3 | (-3)×(-4)=12 | (-15)÷3=-5</p></div>`; };
-simulators.fracao = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🥧 Frações</h3><p>1/2 = 0,5 | 3/4 = 0,75 | Frações equivalentes: 2/4 = 1/2</p></div>`; };
-simulators.potencia = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔋 Potenciação</h3><p>2³=8, 5²=25, (-2)⁴=16, 10⁰=1</p></div>`; };
-simulators.sistema = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Sistemas</h3><p>x+y=5 e x-y=1 → x=3, y=2</p></div>`; };
-simulators.semelhanca = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Semelhança</h3><p>Triângulos com ângulos iguais e lados proporcionais.</p></div>`; };
-simulators.pitagoras = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Pitágoras</h3><p>3²+4²=5² | Catetos 6 e 8 → hipotenusa 10</p></div>`; };
-simulators.quadratica = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Quadrática</h3><p>f(x)=x²-4x+3 → raízes 1 e 3, vértice (2,-1)</p></div>`; };
-simulators.trigonometria = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Trigonometria</h3><p>sen30°=0,5; cos60°=0,5; tg45°=1</p></div>`; };
-simulators.afim = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Função Afim</h3><p>f(x)=2x+3 → coeficiente angular 2, intercepto 3</p></div>`; };
-simulators.exponencial = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Exponencial</h3><p>f(x)=2ˣ → f(3)=8, f(0)=1</p></div>`; };
-simulators.ciclo = (c) => { c.innerHTML = `<div class="sim-inner"><h3>⭕ Ciclo Trigonométrico</h3><p>sen90°=1, cos0°=1, tg45°=1</p></div>`; };
-simulators.progressao = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔢 Progressões</h3><p>PA: 2,5,8,11 (r=3) | PG: 2,4,8,16 (q=2)</p></div>`; };
-simulators.analitica = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📊 Geometria Analítica</h3><p>Distância A(1,2) B(4,6) = 5 | Ponto médio (2.5,4)</p></div>`; };
-simulators.graficos = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📊 Gráficos</h3><p>Interpretação de barras e setores.</p></div>`; };
+// ✅ Sistema Decimal com Explorador funcional
+simulators.decimal = function(container) {
+    renderExplorador(container);
+};
+
+simulators.reta = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📏 Reta Numérica</h3><canvas id="retaCanvas" width="460" height="70" style="width:100%;background:#04060D;border-radius:6px;"></canvas><div class="explicacao-box" style="margin-top:8px;">O ponto laranja marca a posição 2 na reta numérica. Retas numéricas são usadas em termômetros, escalas e coordenadas.</div></div>`;
+    setTimeout(()=>{
+        const cv=document.getElementById('retaCanvas');if(!cv)return;
+        const ctx=cv.getContext('2d');
+        ctx.fillStyle='#04060D';ctx.fillRect(0,0,460,70);
+        ctx.strokeStyle='#4F8EF7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(10,35);ctx.lineTo(450,35);ctx.stroke();
+        ctx.fillStyle='#7A8699';ctx.font='10px JetBrains Mono';
+        for(let i=-10;i<=10;i++){const x=230+i*20;ctx.beginPath();ctx.moveTo(x,28);ctx.lineTo(x,42);ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#7A8699';ctx.fillText(i,x-4,58);}
+        ctx.strokeStyle='#F5A623';ctx.lineWidth=2;ctx.beginPath();ctx.arc(270,35,5,0,Math.PI*2);ctx.stroke();
+    },100);
+};
+
+simulators.operacoes = (c) => { c.innerHTML = `<div class="sim-inner"><h3>➕ Operações Fundamentais</h3><p>Adição: 234+567=<strong style="color:var(--success)">801</strong><br>Subtração: 789−345=<strong style="color:var(--info)">444</strong><br>Multiplicação: 12×8=<strong style="color:var(--warning)">96</strong><br>Divisão: 144÷12=<strong style="color:var(--primary)">12</strong></p></div>`; };
+simulators.multiplos = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔵 Múltiplos e Divisores</h3><p>MMC(4,6)=<strong style="color:var(--success)">12</strong> | MDC(12,18)=<strong style="color:var(--info)">6</strong><br>Primos: 2, 3, 5, 7, 11, 13, 17, 19...</p></div>`; };
+simulators.inteiros = (c) => { c.innerHTML = `<div class="sim-inner"><h3>➖ Números Inteiros</h3><p>(−5)+8=<strong style="color:var(--success)">3</strong> | (−3)×(−4)=<strong style="color:var(--info)">12</strong> | (−15)÷3=<strong style="color:var(--danger)">−5</strong></p></div>`; };
+simulators.fracao = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🥧 Frações</h3><p>1/2 = 0,5 | 3/4 = 0,75<br>Equivalentes: 2/4 = 1/2 = 4/8</p></div>`; };
+simulators.potencia = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔋 Potenciação</h3><p>2³=<strong style="color:var(--warning)">8</strong> | 5²=<strong style="color:var(--info)">25</strong> | (−2)⁴=<strong style="color:var(--success)">16</strong> | 10⁰=<strong style="color:var(--primary)">1</strong></p></div>`; };
+simulators.sistema = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Sistemas de Equações</h3><p>x+y=5 e x−y=1<br>→ x=<strong style="color:var(--success)">3</strong>, y=<strong style="color:var(--info)">2</strong></p></div>`; };
+simulators.semelhanca = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Semelhança de Triângulos</h3><p>Triângulos com ângulos iguais e lados proporcionais. Razão de semelhança: k = a/a'</p></div>`; };
+simulators.pitagoras = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Teorema de Pitágoras</h3><p>a²+b²=c² | 3²+4²=<strong style="color:var(--success)">5²</strong><br>Catetos 6 e 8 → hipotenusa <strong style="color:var(--warning)">10</strong></p></div>`; };
+simulators.quadratica = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Função Quadrática</h3><p>f(x)=x²−4x+3 → raízes <strong style="color:var(--success)">1</strong> e <strong style="color:var(--success)">3</strong>, vértice (<strong style="color:var(--info)">2,−1</strong>)</p></div>`; };
+simulators.trigonometria = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📐 Trigonometria</h3><p>sen30°=<strong style="color:var(--warning)">0,5</strong> | cos60°=<strong style="color:var(--info)">0,5</strong> | tg45°=<strong style="color:var(--success)">1</strong></p></div>`; };
+simulators.afim = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Função Afim</h3><p>f(x)=2x+3 → coef. angular: <strong style="color:var(--warning)">2</strong>, intercepto: <strong style="color:var(--info)">3</strong></p></div>`; };
+simulators.exponencial = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📈 Função Exponencial</h3><p>f(x)=2ˣ → f(3)=<strong style="color:var(--success)">8</strong>, f(0)=<strong style="color:var(--info)">1</strong>, f(−1)=<strong style="color:var(--warning)">0,5</strong></p></div>`; };
+simulators.ciclo = (c) => { c.innerHTML = `<div class="sim-inner"><h3>⭕ Ciclo Trigonométrico</h3><p>sen90°=<strong style="color:var(--success)">1</strong> | cos0°=<strong style="color:var(--success)">1</strong> | tg45°=<strong style="color:var(--warning)">1</strong></p></div>`; };
+simulators.progressao = (c) => { c.innerHTML = `<div class="sim-inner"><h3>🔢 Progressões</h3><p>PA: 2,5,8,11 (r=<strong style="color:var(--info)">3</strong>)<br>PG: 2,4,8,16 (q=<strong style="color:var(--warning)">2</strong>)</p></div>`; };
+simulators.analitica = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📊 Geometria Analítica</h3><p>Distância A(1,2)→B(4,6) = <strong style="color:var(--success)">5</strong><br>Ponto médio: <strong style="color:var(--info)">(2,5 ; 4)</strong></p></div>`; };
+simulators.graficos = (c) => { c.innerHTML = `<div class="sim-inner"><h3>📊 Gráficos e Estatística</h3><p>Média, moda, mediana. Interpretação de barras, setores e histogramas.</p></div>`; };
 
 // ============================================================
-// LÓGICA PRINCIPAL (Arena com 10 questões, Quiz com 10 e explicações)
+// POP-UP: abrir abaixo do botão
+// ============================================================
+function openSimPopup(tipo, titulo, anchorEl) {
+    const popup   = document.getElementById('simPopup');
+    const overlay = document.getElementById('simPopupOverlay');
+    const cap     = document.getElementById('simPopupImageCaption');
+    const tag     = document.getElementById('simPopupImageTag');
+    const body    = document.getElementById('simPopupBody');
+    const titleEl = document.getElementById('simPopupTitle');
+    const placeholder = document.getElementById('simPopupPlaceholder');
+
+    titleEl.textContent = titulo;
+    const info = simImages[tipo] || simImages.geometria3d;
+    cap.textContent = info.caption;
+    tag.textContent = info.tag;
+    body.innerHTML = '';
+    placeholder.style.opacity = '1';
+
+    // Carrega imagem de forma robusta
+    loadSimImage(tipo);
+
+    // Renderiza conteúdo do simulador
+    if (simulators[tipo]) simulators[tipo](body);
+    else body.innerHTML = `<div class="sim-inner"><p>Simulador em construção.</p></div>`;
+
+    popup.style.display = 'block';
+    overlay.classList.add('active');
+
+    if (anchorEl) {
+        const rect = anchorEl.getBoundingClientRect();
+        const vpW  = window.innerWidth;
+        const vpH  = window.innerHeight;
+        const popW = Math.min(520, vpW * 0.96);
+
+        let left = rect.left;
+        let top  = rect.bottom + 8 + window.scrollY;
+
+        if (left + popW > vpW - 8) left = vpW - popW - 8;
+        if (left < 8) left = 8;
+
+        const estPopH = 520;
+        if (rect.bottom + estPopH > vpH) {
+            top = rect.top + window.scrollY - estPopH - 8;
+        }
+
+        popup.style.position  = 'absolute';
+        popup.style.left      = left + 'px';
+        popup.style.top       = top  + 'px';
+        popup.style.transform = 'none';
+    } else {
+        popup.style.position  = 'fixed';
+        popup.style.left      = '50%';
+        popup.style.top       = '50%';
+        popup.style.transform = 'translate(-50%,-50%)';
+    }
+}
+
+function closeSimPopup(e) {
+    if (e && e.target !== document.getElementById('simPopupOverlay')) return;
+    document.getElementById('simPopup').style.display = 'none';
+    document.getElementById('simPopupOverlay').classList.remove('active');
+}
+
+document.addEventListener('keydown', e => {
+    if(e.key==='Escape') {
+        document.getElementById('simPopup').style.display='none';
+        document.getElementById('simPopupOverlay').classList.remove('active');
+    }
+});
+
+// ============================================================
+// LÓGICA PRINCIPAL
 // ============================================================
 let currentSerie = null, arenaState = null, quizState = null, xpTotal = 0;
 
-function changePage(p) { document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById(`page-${p}`).classList.add('active'); }
-function selectSerie(id, btn, ctx) {
-    currentSerie = id; const data = seriesData[id];
+function changePage(p) {
+    document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+    document.getElementById(`page-${p}`).classList.add('active');
+    const tabs = ['home','simuladores','arena','quiz','professor'];
+    const idx = tabs.indexOf(p);
+    if(idx>=0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+}
+
+function selectSerie(id, btn) {
+    currentSerie = id;
     document.querySelectorAll('.series-btn').forEach(b=>b.classList.remove('active'));
     if(btn) btn.classList.add('active');
     renderAEs(); renderSimuladores(); renderArena(); renderQuiz(); renderProfessor();
     updateProgress();
 }
-function renderAEs() { if(!currentSerie) return; const data=seriesData[currentSerie]; document.getElementById('aeGrid').innerHTML = data.aes.map(ae=>`<div class="ae-card"><div class="ae-code">${ae.code}</div><div class="ae-title">${ae.title||ae.code}</div><div class="ae-desc">Tópico essencial alinhado ao Currículo Paulista.</div><div class="ae-actions"><button class="btn-sm sim" onclick="openGlobalSim('${ae.sim}','${ae.code}')">Simular</button><button class="btn-sm quiz" onclick="startSerieQuiz()">Quiz</button><button class="btn-sm plano" onclick="openGlobalPlano('${ae.code}')">Plano</button></div></div>`).join(''); }
-function renderSimuladores() { const data=seriesData[currentSerie]; document.getElementById('simuladoresGrid').innerHTML = data.simuladores.map(tipo=>`<div class="ae-card" onclick="openPageSim('${tipo}','${tipo.toUpperCase()}')"><div class="ae-title">${tipo.toUpperCase()}</div><div class="ae-actions"><button class="btn-sm sim">▶ Iniciar</button></div></div>`).join(''); }
-function renderArena() { if(!currentSerie) return; const data=seriesData[currentSerie]; arenaState = { idx:0, score:0, questions:[...data.arenaChallenges], corrects:0 }; document.getElementById('arenaSerieLabel').innerHTML = data.name; document.getElementById('arenaScoreVal').innerText='0'; document.getElementById('arenaAcertos').innerHTML=`0/${arenaState.questions.length}`; document.getElementById('arenaEmptyState').style.display='none'; document.getElementById('arenaQuestionArea').style.display='block'; document.getElementById('arenaResultArea').style.display='none'; displayArenaQuestion(); }
-function displayArenaQuestion() { if(arenaState.idx>=arenaState.questions.length){ finishArena(); return; } const q=arenaState.questions[arenaState.idx]; document.getElementById('arenaQNum').innerHTML=`Questão ${arenaState.idx+1}/${arenaState.questions.length}`; document.getElementById('arenaQText').innerHTML=q.q; document.getElementById('arenaOptions').innerHTML=q.opts.map((opt,i)=>`<button class="arena-opt" onclick="answerArena(${i})"><span class="arena-opt-letter">${String.fromCharCode(65+i)}</span>${opt}</button>`).join(''); document.getElementById('arenaFeedback').innerHTML=''; document.getElementById('arenaNextBtn').style.display='none'; arenaState.answered=false; startArenaTimer(); }
-function startArenaTimer(){ if(arenaState.timer)clearInterval(arenaState.timer); let sec=15; document.getElementById('arenaFeedback').innerHTML=`⏱ ${sec}s`; arenaState.timer=setInterval(()=>{ sec--; document.getElementById('arenaFeedback').innerHTML=`⏱ ${sec}s`; if(sec<=0&&!arenaState.answered){ clearInterval(arenaState.timer); answerArena(-1); } },1000); }
-function answerArena(sel){ if(arenaState.answered)return; clearInterval(arenaState.timer); const q=arenaState.questions[arenaState.idx]; const isCorrect = (sel===q.correct); if(isCorrect){ arenaState.score+=100; arenaState.corrects++; document.getElementById('arenaScoreVal').innerText=arenaState.score; addXP(100); } const fb = isCorrect ? `✅ Correto! ${q.expl||'Muito bem!'}` : `❌ Errado! Resposta correta: ${q.opts[q.correct]}. Explicação: ${q.expl||'Revise o conceito.'}`; document.getElementById('arenaFeedback').innerHTML=`<div class="explicacao-box">${fb}</div>`; arenaState.answered=true; document.querySelectorAll('.arena-opt').forEach((btn,i)=>{ btn.classList.add('disabled'); if(i===q.correct)btn.classList.add('correct'); if(i===sel&&!isCorrect)btn.classList.add('wrong'); }); arenaState.idx++; document.getElementById('arenaNextBtn').style.display='block'; }
+
+function renderAEs() {
+    if(!currentSerie) return;
+    const data = seriesData[currentSerie];
+    document.getElementById('aeGrid').innerHTML = data.aes.map(ae=>`
+        <div class="ae-card">
+            <div class="ae-code">${ae.code}</div>
+            <div class="ae-title">${ae.title||ae.code}</div>
+            <div class="ae-desc">Tópico essencial alinhado ao Currículo Paulista.</div>
+            <div class="ae-actions">
+                <button class="btn-sm sim" onclick="openSimPopup('${ae.sim}','${ae.code} — ${ae.title||ae.code}',this)">▶ Simular</button>
+                <button class="btn-sm quiz" onclick="startSerieQuiz()">Quiz</button>
+                <button class="btn-sm plano" onclick="openGlobalPlano('${ae.code}')">Plano</button>
+            </div>
+        </div>`).join('');
+}
+
+function renderSimuladores() {
+    if(!currentSerie) return;
+    const data = seriesData[currentSerie];
+    const nomes = {
+        decimal:'Sistema Decimal', reta:'Reta Numérica', operacoes:'Operações', multiplos:'Múltiplos/MMC',
+        geometria3d:'Geometria 3D', graficos:'Gráficos', inteiros:'Números Inteiros', fracao:'Frações',
+        potencia:'Potenciação', pitagoras:'Pitágoras', sistema:'Sistemas', semelhanca:'Semelhança',
+        quadratica:'Função Quadrática', trigonometria:'Trigonometria', afim:'Função Afim',
+        exponencial:'Exponencial', ciclo:'Ciclo Trigonométrico', progressao:'Progressões', analitica:'Geom. Analítica'
+    };
+    document.getElementById('simuladoresGrid').innerHTML = data.simuladores.map(tipo=>`
+        <div class="ae-card">
+            <div class="ae-title">${nomes[tipo]||tipo.toUpperCase()}</div>
+            <div class="ae-desc">Simulador interativo com imagem real do contexto.</div>
+            <div class="ae-actions">
+                <button class="btn-sm sim" onclick="openSimPopup('${tipo}','${nomes[tipo]||tipo.toUpperCase()}',this)">▶ Iniciar</button>
+            </div>
+        </div>`).join('');
+}
+
+function renderArena() {
+    if(!currentSerie) return;
+    const data = seriesData[currentSerie];
+    arenaState = { idx:0, score:0, questions:[...data.arenaChallenges], corrects:0 };
+    document.getElementById('arenaSerieLabel').innerHTML = data.name;
+    document.getElementById('arenaScoreVal').innerText = '0';
+    document.getElementById('arenaAcertos').innerHTML = `0/${arenaState.questions.length}`;
+    document.getElementById('arenaEmptyState').style.display = 'none';
+    document.getElementById('arenaQuestionArea').style.display = 'block';
+    document.getElementById('arenaResultArea').style.display = 'none';
+    displayArenaQuestion();
+}
+
+function displayArenaQuestion() {
+    if(arenaState.idx >= arenaState.questions.length){ finishArena(); return; }
+    const q = arenaState.questions[arenaState.idx];
+    document.getElementById('arenaQNum').innerHTML = `Questão ${arenaState.idx+1}/${arenaState.questions.length}`;
+    document.getElementById('arenaQText').innerHTML = q.q;
+    document.getElementById('arenaOptions').innerHTML = q.opts.map((opt,i)=>`<button class="arena-opt" onclick="answerArena(${i})"><span class="arena-opt-letter">${String.fromCharCode(65+i)}</span>${opt}</button>`).join('');
+    document.getElementById('arenaFeedback').innerHTML = '';
+    document.getElementById('arenaNextBtn').style.display = 'none';
+    arenaState.answered = false;
+    startArenaTimer();
+}
+
+function startArenaTimer(){
+    if(arenaState.timer) clearInterval(arenaState.timer);
+    let sec = 15;
+    document.getElementById('arenaFeedback').innerHTML = `⏱ ${sec}s`;
+    arenaState.timer = setInterval(()=>{ sec--; document.getElementById('arenaFeedback').innerHTML=`⏱ ${sec}s`; if(sec<=0&&!arenaState.answered){ clearInterval(arenaState.timer); answerArena(-1); } }, 1000);
+}
+
+function answerArena(sel){
+    if(arenaState.answered) return;
+    clearInterval(arenaState.timer);
+    const q = arenaState.questions[arenaState.idx];
+    const isCorrect = (sel===q.correct);
+    if(isCorrect){ arenaState.score+=100; arenaState.corrects++; document.getElementById('arenaScoreVal').innerText=arenaState.score; addXP(100); }
+    const fb = isCorrect ? `✅ Correto! ${q.expl||'Muito bem!'}` : `❌ Errado! Resposta correta: ${q.opts[q.correct]}. Explicação: ${q.expl||'Revise o conceito.'}`;
+    document.getElementById('arenaFeedback').innerHTML = `<div class="explicacao-box">${fb}</div>`;
+    arenaState.answered = true;
+    document.querySelectorAll('.arena-opt').forEach((btn,i)=>{ btn.classList.add('disabled'); if(i===q.correct)btn.classList.add('correct'); if(i===sel&&!isCorrect)btn.classList.add('wrong'); });
+    document.getElementById('arenaAcertos').innerHTML = `${arenaState.corrects}/${arenaState.questions.length}`;
+    arenaState.idx++;
+    document.getElementById('arenaNextBtn').style.display = 'block';
+    const pct = (arenaState.idx/arenaState.questions.length)*100;
+    document.getElementById('arenaProgressFill').style.width = pct+'%';
+}
+
 function nextArenaQuestion(){ displayArenaQuestion(); }
-function finishArena(){ document.getElementById('arenaQuestionArea').style.display='none'; document.getElementById('arenaResultArea').style.display='block'; document.getElementById('arenaResultArea').innerHTML=`<div style="font-size:1.5rem;">🏆 Pontuação final: ${arenaState.score} pts</div><div>Acertos: ${arenaState.corrects}/${arenaState.questions.length}</div><button class="btn-primary" onclick="renderArena()">Jogar Novamente</button>`; }
-function renderQuiz(){ if(!currentSerie)return; const data=seriesData[currentSerie]; quizState={questions:[...data.quizBank], idx:0, score:0, answered:false}; displayQuizQuestion(); }
-function displayQuizQuestion(){ if(quizState.idx>=quizState.questions.length){ finishQuiz(); return; } const q=quizState.questions[quizState.idx]; document.getElementById('quizHeader').innerHTML=`Questão ${quizState.idx+1}/${quizState.questions.length}`; document.getElementById('quizBody').innerHTML=`<div class="quiz-question">${q.q}</div><div class="quiz-options">${q.opts.map((opt,i)=>`<div class="quiz-option" onclick="answerQuiz(${i})">${opt}</div>`).join('')}</div>`; document.getElementById('quizNextBtn').style.display='none'; quizState.answered=false; }
-function answerQuiz(sel){ if(quizState.answered)return; const q=quizState.questions[quizState.idx]; const correct=sel===q.correct; if(correct){ quizState.score+=100; addXP(100); } const explDiv = `<div class="explicacao-box">${correct?'✅ Correto! ':'❌ Errado! '} ${q.expl||(correct?'Parabéns!':'Estude mais.')}</div>`; document.getElementById('quizBody').innerHTML+=explDiv; document.querySelectorAll('.quiz-option').forEach((el,i)=>{ el.classList.add('disabled'); if(i===q.correct)el.classList.add('correct'); if(i===sel&&!correct)el.classList.add('wrong'); }); quizState.answered=true; quizState.idx++; document.getElementById('quizNextBtn').style.display='block'; document.getElementById('quizScore').innerText=quizState.score; }
+function finishArena(){
+    document.getElementById('arenaQuestionArea').style.display='none';
+    document.getElementById('arenaResultArea').style.display='block';
+    document.getElementById('arenaResultArea').innerHTML=`<div style="font-size:1.5rem;margin-bottom:0.75rem;">🏆 Pontuação final: ${arenaState.score} pts</div><div style="color:var(--text-secondary)">Acertos: ${arenaState.corrects}/${arenaState.questions.length}</div><button class="btn-primary" style="margin-top:1rem;" onclick="renderArena()">Jogar Novamente</button>`;
+}
+
+function renderQuiz(){
+    if(!currentSerie) return;
+    const data = seriesData[currentSerie];
+    quizState = { questions:[...data.quizBank], idx:0, score:0, answered:false };
+    displayQuizQuestion();
+}
+
+function displayQuizQuestion(){
+    if(quizState.idx >= quizState.questions.length){ finishQuiz(); return; }
+    const q = quizState.questions[quizState.idx];
+    document.getElementById('quizHeader').innerHTML = `Questão ${quizState.idx+1}/${quizState.questions.length}`;
+    document.getElementById('quizBody').innerHTML = `<div style="font-weight:600;margin-bottom:1rem;">${q.q}</div><div class="quiz-options">${q.opts.map((opt,i)=>`<div class="quiz-option" onclick="answerQuiz(${i})">${opt}</div>`).join('')}</div>`;
+    document.getElementById('quizNextBtn').style.display = 'none';
+    quizState.answered = false;
+}
+
+function answerQuiz(sel){
+    if(quizState.answered) return;
+    const q = quizState.questions[quizState.idx];
+    const correct = sel===q.correct;
+    if(correct){ quizState.score+=100; addXP(100); }
+    document.getElementById('quizBody').innerHTML += `<div class="explicacao-box">${correct?'✅ Correto! ':'❌ Errado! '} ${q.expl||(correct?'Parabéns!':'Estude mais.')}</div>`;
+    document.querySelectorAll('.quiz-option').forEach((el,i)=>{ el.classList.add('disabled'); if(i===q.correct)el.classList.add('correct'); if(i===sel&&!correct)el.classList.add('wrong'); });
+    quizState.answered = true; quizState.idx++;
+    document.getElementById('quizNextBtn').style.display = 'block';
+    document.getElementById('quizScore').innerText = quizState.score;
+}
+
 function nextQuizQuestion(){ displayQuizQuestion(); }
 function finishQuiz(){ document.getElementById('quizBody').innerHTML=`<div class="empty-state">🏆 Quiz finalizado! Pontuação: ${quizState.score}</div>`; document.getElementById('quizNextBtn').style.display='none'; }
-function openGlobalSim(tipo,tit){ document.getElementById('simTitle').innerHTML=tit; document.getElementById('simGlobalPanel').classList.add('active'); if(simulators[tipo]) simulators[tipo](document.getElementById('simCanvasContainer')); else document.getElementById('simCanvasContainer').innerHTML=`<div class="sim-inner">Simulador em construção.</div>`; }
-function openPageSim(tipo,tit){ document.getElementById('simPageTitle').innerHTML=tit; document.getElementById('simPagePanel').classList.add('active'); if(simulators[tipo]) simulators[tipo](document.getElementById('simPageContainer')); else document.getElementById('simPageContainer').innerHTML=`<div class="sim-inner">Em breve.</div>`; }
-function openGlobalPlano(code){ document.getElementById('planoContent').innerHTML=`<div><b>Plano de Aula - ${code}</b><p>Metodologias ativas: resolução de problemas, uso de simuladores 3D, avaliação formativa com rubricas.</p></div>`; document.getElementById('planoGlobalPanel').classList.add('active'); }
-function startSerieQuiz(){ renderQuiz(); changePage('quiz'); }
-function renderProfessor(){ const data=seriesData[currentSerie]; document.getElementById('profGrid').innerHTML=data.simuladores.map(tipo=>`<div class="ae-card" onclick="openProfSim('${tipo}','${tipo}')"><div class="ae-title">🎓 Estratégia: ${tipo}</div><div class="ae-actions"><button class="btn-sm sim">Ver recurso</button></div></div>`).join(''); }
-function openProfSim(tipo,tit){ document.getElementById('simProfTitle').innerHTML=tit; document.getElementById('simProfPanel').classList.add('active'); if(simulators[tipo]) simulators[tipo](document.getElementById('simProfContainer')); }
-function updateProgress(){ const p = Math.min(95, Math.floor(xpTotal/500)*15+10); document.getElementById('xpTotal').innerText=xpTotal; }
-function addXP(v){ xpTotal+=v; updateProgress(); showToast(`+${v} XP`,''); }
-function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastText').innerHTML=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
-function closeGlobalSim(){ document.getElementById('simGlobalPanel').classList.remove('active'); }
+
+function openGlobalPlano(code){
+    document.getElementById('planoContent').innerHTML=`<div><b>Plano de Aula — ${code}</b><p style="margin-top:0.5rem;color:var(--text-secondary);font-size:0.9rem;">Metodologias ativas: resolução de problemas, uso de simuladores 3D, avaliação formativa com rubricas.</p></div>`;
+    document.getElementById('planoGlobalPanel').classList.add('active');
+}
 function closeGlobalPlano(){ document.getElementById('planoGlobalPanel').classList.remove('active'); }
-function initSelectors(){ const series=['ef6','ef7','ef8','ef9','em1','em2','em3']; const names=['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM']; series.forEach((s,i)=>{ const btn=`<button class="series-btn" onclick="selectSerie('${s}',this)">${names[i]}</button>`; document.querySelectorAll('.series-selector').forEach(sel=>sel.innerHTML+=btn); }); selectSerie('ef6',document.querySelector('#serieSelectorHome .series-btn')); }
+
+function startSerieQuiz(){ renderQuiz(); changePage('quiz'); }
+
+function renderProfessor(){
+    if(!currentSerie) return;
+    const data = seriesData[currentSerie];
+    const nomes = { decimal:'Sistema Decimal', reta:'Reta Numérica', operacoes:'Operações', multiplos:'Múltiplos/MMC', geometria3d:'Geometria 3D', graficos:'Gráficos', inteiros:'Números Inteiros', fracao:'Frações', potencia:'Potenciação', pitagoras:'Pitágoras', sistema:'Sistemas', semelhanca:'Semelhança', quadratica:'Quadrática', trigonometria:'Trigonometria', afim:'Função Afim', exponencial:'Exponencial', ciclo:'Ciclo Trigo.', progressao:'Progressões', analitica:'Geom. Analítica' };
+    document.getElementById('profGrid').innerHTML = data.simuladores.map(tipo=>`
+        <div class="ae-card">
+            <div class="ae-title">🎓 Estratégia: ${nomes[tipo]||tipo}</div>
+            <div class="ae-desc">Recurso visual com contexto real para uso em sala de aula.</div>
+            <div class="ae-actions">
+                <button class="btn-sm sim" onclick="openSimPopup('${tipo}','${nomes[tipo]||tipo}',this)">Ver recurso</button>
+            </div>
+        </div>`).join('');
+}
+
+function updateProgress(){ document.getElementById('xpTotal').innerText = xpTotal; }
+function addXP(v){ xpTotal+=v; updateProgress(); showToast(`+${v} XP`); }
+function showToast(msg){ const t=document.getElementById('toast'); document.getElementById('toastText').innerHTML=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
+
+// Inicialização
+function initSelectors(){
+    const series=['ef6','ef7','ef8','ef9','em1','em2','em3'];
+    const names=['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
+    series.forEach((s,i)=>{
+        const btn=`<button class="series-btn" onclick="selectSerie('${s}',this)">${names[i]}</button>`;
+        document.querySelectorAll('.series-selector').forEach(sel=>sel.innerHTML+=btn);
+    });
+    selectSerie('ef6', document.querySelector('#serieSelectorHome .series-btn'));
+}
 initSelectors();
 </script>
 </body>
