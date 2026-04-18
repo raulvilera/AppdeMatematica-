@@ -200,19 +200,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .questao-enunciado{font-size:clamp(0.8rem,2vw,0.9rem);line-height:1.6;color:var(--text);
   padding:0.45rem 0.875rem 0.7rem;font-weight:500;}
 
-/* Imagem da questão */
+/* ── IMAGEM DA QUESTÃO — CANVAS GERADO ── */
 .questao-img{width:100%;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#0a0f1e,#131c30);
-  margin:0 0 0.4rem;min-height:140px;max-height:220px;
-  display:flex;align-items:center;justify-content:center;}
-.questao-img img{width:100%;height:100%;object-fit:cover;display:block;
-  max-height:220px;opacity:0;transition:opacity 0.5s;}
-.questao-img img.qi-ok{opacity:1;}
-.qi-skeleton{position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:0.5rem;pointer-events:none;transition:opacity 0.4s;}
-.qi-skeleton-ring{width:36px;height:36px;border-radius:50%;
-  border:2.5px solid rgba(155,111,247,0.3);border-top-color:var(--secondary);animation:spin 1s linear infinite;}
-.qi-skeleton-txt{font-size:0.62rem;font-family:'JetBrains Mono';color:var(--text-tertiary);}
+  background:#04060D;
+  margin:0 0 0.4rem;}
+.questao-img canvas{width:100%;display:block;}
 .qi-badge{position:absolute;top:0.45rem;left:0.45rem;background:rgba(8,11,18,0.82);
   backdrop-filter:blur(6px);border:1px solid rgba(155,111,247,0.35);border-radius:2rem;
   padding:0.18rem 0.55rem;font-size:0.58rem;font-weight:700;color:var(--secondary);}
@@ -311,11 +303,6 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   padding:0.5rem 0.75rem;display:flex;flex-direction:column;gap:0.25rem;}
 .expl-num{font-family:'JetBrains Mono';font-size:1.25rem;color:var(--primary);font-weight:700;}
 .expl-break{font-size:0.72rem;color:var(--text-secondary);line-height:1.5;}
-.expl-blocks{display:flex;gap:0.25rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.4rem;}
-.b-u{width:9px;height:9px;background:var(--success);border-radius:2px;}
-.b-d{width:9px;height:55px;background:var(--info);border-radius:2px;}
-.b-c{width:50px;height:50px;background:var(--warning);border-radius:4px;opacity:0.85;}
-.b-m{width:50px;height:50px;background:var(--secondary);border-radius:6px;opacity:0.9;}
 
 /* ── TOAST ── */
 .toast{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--surface-2);
@@ -340,6 +327,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   border-radius:var(--radius-sm);padding:0.4rem 0.75rem;font-size:0.7rem;
   font-weight:700;color:white;cursor:pointer;white-space:nowrap;transition:0.2s;flex-shrink:0;}
 .share-copy:hover{opacity:0.85;}
+
+/* ── BANNER LINK ATIVO ── */
+.atv-link-banner{background:linear-gradient(135deg,rgba(34,201,122,0.1),rgba(79,142,247,0.08));
+  border:1px solid rgba(34,201,122,0.3);border-radius:var(--radius-sm);
+  padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;}
 
 /* ── RESPONSIVO ── */
 @media(max-width:600px){
@@ -536,116 +528,59 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
    BANCO CURRICULAR COMPLETO
    ==================================================== */
 
-// 6º ANO — Frações e Geometria (arquivo pasted_content_2)
 const ef6_aes = [
-  // FRAÇÕES
-  {code:'EF06MA07',title:'Frações como resultado de divisão',sim:'fracao',tag:'num',
-   desc:'Fração como divisão: numerador ÷ denominador. Representação na reta numérica.'},
-  {code:'EF06MA08',title:'Fração de uma quantidade',sim:'fracao',tag:'num',
-   desc:'Estratégias para calcular a fração de uma quantidade. Resolução de problemas.'},
-  {code:'EF06MA09',title:'Comparação de frações com a reta numérica',sim:'reta',tag:'num',
-   desc:'Comparação de frações usando a reta numérica como referência visual.'},
-  {code:'EF06MA10',title:'Frações equivalentes',sim:'fracao',tag:'num',
-   desc:'Obtenção de frações equivalentes por multiplicação e divisão.'},
-  {code:'EF06MA11',title:'Simplificação de frações',sim:'fracao',tag:'num',
-   desc:'Estratégias de simplificação usando o MDC. Frações irredutíveis.'},
-  {code:'EF06MA12',title:'Adição e subtração de frações',sim:'fracao',tag:'num',
-   desc:'Adição e subtração com frações de denominadores iguais e diferentes.'},
-  {code:'EF06MA13',title:'Forma mista',sim:'fracao',tag:'num',
-   desc:'Representação mista (número inteiro + fração). Conversão entre formas.'},
-  {code:'EF06MA14',title:'Multiplicação e divisão de frações',sim:'fracao',tag:'num',
-   desc:'Multiplicação e divisão com frações. Estratégias de simplificação cruzada.'},
-  // GEOMETRIA
-  {code:'EF06MA19',title:'Giros e ângulos',sim:'angulos',tag:'geo',
-   desc:'Conceito de ângulo como giro. Ângulos retos, agudos, obtusos e rasos.'},
-  {code:'EF06MA20',title:'Reconhecimento e classificação de polígonos',sim:'poligonos',tag:'geo',
-   desc:'Classificação de polígonos pelo número de lados, ângulos e tipos.'},
-  {code:'EF06MA21',title:'Reconhecimento e classificação de triângulos',sim:'triangulos',tag:'geo',
-   desc:'Classificação quanto aos lados (equilátero, isósceles, escaleno) e ângulos.'},
-  {code:'EF06MA22',title:'Características dos quadriláteros',sim:'quadrilateros',tag:'geo',
-   desc:'Quadrado, retângulo, losango, paralelogramo, trapézio — propriedades.'},
+  {code:'EF06MA07',title:'Frações como resultado de divisão',sim:'fracao',tag:'num',desc:'Fração como divisão: numerador ÷ denominador. Representação na reta numérica.'},
+  {code:'EF06MA08',title:'Fração de uma quantidade',sim:'fracao',tag:'num',desc:'Estratégias para calcular a fração de uma quantidade. Resolução de problemas.'},
+  {code:'EF06MA09',title:'Comparação de frações com a reta numérica',sim:'reta',tag:'num',desc:'Comparação de frações usando a reta numérica como referência visual.'},
+  {code:'EF06MA10',title:'Frações equivalentes',sim:'fracao',tag:'num',desc:'Obtenção de frações equivalentes por multiplicação e divisão.'},
+  {code:'EF06MA11',title:'Simplificação de frações',sim:'fracao',tag:'num',desc:'Estratégias de simplificação usando o MDC. Frações irredutíveis.'},
+  {code:'EF06MA12',title:'Adição e subtração de frações',sim:'fracao',tag:'num',desc:'Adição e subtração com frações de denominadores iguais e diferentes.'},
+  {code:'EF06MA13',title:'Forma mista',sim:'fracao',tag:'num',desc:'Representação mista (número inteiro + fração). Conversão entre formas.'},
+  {code:'EF06MA14',title:'Multiplicação e divisão de frações',sim:'fracao',tag:'num',desc:'Multiplicação e divisão com frações. Estratégias de simplificação cruzada.'},
+  {code:'EF06MA19',title:'Giros e ângulos',sim:'angulos',tag:'geo',desc:'Conceito de ângulo como giro. Ângulos retos, agudos, obtusos e rasos.'},
+  {code:'EF06MA20',title:'Reconhecimento e classificação de polígonos',sim:'poligonos',tag:'geo',desc:'Classificação de polígonos pelo número de lados, ângulos e tipos.'},
+  {code:'EF06MA21',title:'Reconhecimento e classificação de triângulos',sim:'triangulos',tag:'geo',desc:'Classificação quanto aos lados (equilátero, isósceles, escaleno) e ângulos.'},
+  {code:'EF06MA22',title:'Características dos quadriláteros',sim:'quadrilateros',tag:'geo',desc:'Quadrado, retângulo, losango, paralelogramo, trapézio — propriedades.'},
 ];
 
-// 7º ANO — Números Racionais, Plano Cartesiano, Áreas (arquivo pasted_content_3)
 const ef7_aes = [
-  // NÚMEROS RACIONAIS
-  {code:'EF07MA01',title:'Frações e números decimais',sim:'decimal',tag:'num',
-   desc:'Relações entre frações e decimais. Conversão e representação na reta.'},
-  {code:'EF07MA02',title:'Números racionais na reta numérica',sim:'reta',tag:'num',
-   desc:'Posicionamento de racionais positivos e negativos na reta numérica.'},
-  {code:'EF07MA03',title:'Adição e subtração de racionais decimais',sim:'operacoes',tag:'num',
-   desc:'Estratégias de adição e subtração com números racionais na forma decimal.'},
-  {code:'EF07MA04',title:'Multiplicação e potenciação de racionais',sim:'potencia',tag:'num',
-   desc:'Multiplicação e potenciação de números racionais. Propriedades.'},
-  {code:'EF07MA05',title:'Divisão de números racionais',sim:'operacoes',tag:'num',
-   desc:'Divisão de racionais decimais. Resolução de problemas aplicados.'},
-  // PLANO CARTESIANO
-  {code:'EF07MA15',title:'Polígonos no plano cartesiano',sim:'analitica',tag:'geo',
-   desc:'Classificação de polígonos e representação no plano cartesiano.'},
-  {code:'EF07MA16',title:'Pontos no plano cartesiano',sim:'analitica',tag:'geo',
-   desc:'Identificação e marcação de pontos nos quatro quadrantes.'},
-  {code:'EF07MA17',title:'Simétricos no plano cartesiano',sim:'analitica',tag:'geo',
-   desc:'Reflexão de figuras em relação aos eixos. Simetria axial.'},
-  // ÁREAS
-  {code:'EF07MA30',title:'Explorando áreas na malha',sim:'geometria3d',tag:'geo',
-   desc:'Cálculo de áreas por contagem de quadradinhos na malha quadriculada.'},
-  {code:'EF07MA31',title:'Área de retângulos e quadrados',sim:'geometria3d',tag:'geo',
-   desc:'Fórmula A = b × h. Resolução de problemas com retângulos e quadrados.'},
-  {code:'EF07MA32',title:'Área de triângulos',sim:'pitagoras',tag:'geo',
-   desc:'Fórmula A = (b × h) / 2. Altura e base de triângulos variados.'},
-  {code:'EF07MA33',title:'Área por decomposição',sim:'geometria3d',tag:'geo',
-   desc:'Cálculo de área de figuras compostas por decomposição em formas simples.'},
+  {code:'EF07MA01',title:'Frações e números decimais',sim:'decimal',tag:'num',desc:'Relações entre frações e decimais. Conversão e representação na reta.'},
+  {code:'EF07MA02',title:'Números racionais na reta numérica',sim:'reta',tag:'num',desc:'Posicionamento de racionais positivos e negativos na reta numérica.'},
+  {code:'EF07MA03',title:'Adição e subtração de racionais decimais',sim:'operacoes',tag:'num',desc:'Estratégias de adição e subtração com números racionais na forma decimal.'},
+  {code:'EF07MA04',title:'Multiplicação e potenciação de racionais',sim:'potencia',tag:'num',desc:'Multiplicação e potenciação de números racionais. Propriedades.'},
+  {code:'EF07MA05',title:'Divisão de números racionais',sim:'operacoes',tag:'num',desc:'Divisão de racionais decimais. Resolução de problemas aplicados.'},
+  {code:'EF07MA15',title:'Polígonos no plano cartesiano',sim:'analitica',tag:'geo',desc:'Classificação de polígonos e representação no plano cartesiano.'},
+  {code:'EF07MA16',title:'Pontos no plano cartesiano',sim:'analitica',tag:'geo',desc:'Identificação e marcação de pontos nos quatro quadrantes.'},
+  {code:'EF07MA17',title:'Simétricos no plano cartesiano',sim:'analitica',tag:'geo',desc:'Reflexão de figuras em relação aos eixos. Simetria axial.'},
+  {code:'EF07MA30',title:'Explorando áreas na malha',sim:'geometria3d',tag:'geo',desc:'Cálculo de áreas por contagem de quadradinhos na malha quadriculada.'},
+  {code:'EF07MA31',title:'Área de retângulos e quadrados',sim:'geometria3d',tag:'geo',desc:'Fórmula A = b × h. Resolução de problemas com retângulos e quadrados.'},
+  {code:'EF07MA32',title:'Área de triângulos',sim:'pitagoras',tag:'geo',desc:'Fórmula A = (b × h) / 2. Altura e base de triângulos variados.'},
+  {code:'EF07MA33',title:'Área por decomposição',sim:'geometria3d',tag:'geo',desc:'Cálculo de área de figuras compostas por decomposição em formas simples.'},
 ];
 
-// 8º ANO — Álgebra: Expressões, Equações, Sistemas (arquivo pasted_content_4)
 const ef8_aes = [
-  // EXPRESSÕES ALGÉBRICAS
-  {code:'EF08MA01',title:'Introdução ao cálculo algébrico',sim:'afim',tag:'alg',
-   desc:'Uso de letras para representar números. Introdução à linguagem algébrica.'},
-  {code:'EF08MA02',title:'Valor numérico de expressões algébricas',sim:'afim',tag:'alg',
-   desc:'Substituição de variáveis e cálculo do valor numérico de expressões.'},
-  {code:'EF08MA03',title:'Simplificação de expressões algébricas',sim:'afim',tag:'alg',
-   desc:'Redução de termos semelhantes. Simplificação com monômios e polinômios.'},
-  // EQUAÇÕES 1º GRAU
-  {code:'EF08MA06',title:'Relação de igualdade e equações do 1º grau',sim:'sistema',tag:'alg',
-   desc:'Conceito de equação. Estratégias de resolução de equações do 1º grau.'},
-  {code:'EF08MA07',title:'Modelagem com equações do 1º grau',sim:'afim',tag:'alg',
-   desc:'Tradução de problemas em equações. Resolução e interpretação.'},
-  {code:'EF08MA08',title:'Equações do 1º grau com duas incógnitas',sim:'sistema',tag:'alg',
-   desc:'Equações com duas variáveis. Representação no plano cartesiano.'},
-  // SISTEMAS
-  {code:'EF08MA09',title:'Sistemas de equações do 1º grau',sim:'sistema',tag:'alg',
-   desc:'Conceito e representação de sistemas lineares 2×2.'},
-  {code:'EF08MA10',title:'Resolução algébrica de sistemas',sim:'sistema',tag:'alg',
-   desc:'Métodos de substituição e adição para resolução de sistemas.'},
-  {code:'EF08MA11',title:'Modelagem com sistemas de equações',sim:'sistema',tag:'alg',
-   desc:'Problemas cotidianos modelados por sistemas de equações.'},
+  {code:'EF08MA01',title:'Introdução ao cálculo algébrico',sim:'afim',tag:'alg',desc:'Uso de letras para representar números. Introdução à linguagem algébrica.'},
+  {code:'EF08MA02',title:'Valor numérico de expressões algébricas',sim:'afim',tag:'alg',desc:'Substituição de variáveis e cálculo do valor numérico de expressões.'},
+  {code:'EF08MA03',title:'Simplificação de expressões algébricas',sim:'afim',tag:'alg',desc:'Redução de termos semelhantes. Simplificação com monômios e polinômios.'},
+  {code:'EF08MA06',title:'Relação de igualdade e equações do 1º grau',sim:'sistema',tag:'alg',desc:'Conceito de equação. Estratégias de resolução de equações do 1º grau.'},
+  {code:'EF08MA07',title:'Modelagem com equações do 1º grau',sim:'afim',tag:'alg',desc:'Tradução de problemas em equações. Resolução e interpretação.'},
+  {code:'EF08MA08',title:'Equações do 1º grau com duas incógnitas',sim:'sistema',tag:'alg',desc:'Equações com duas variáveis. Representação no plano cartesiano.'},
+  {code:'EF08MA09',title:'Sistemas de equações do 1º grau',sim:'sistema',tag:'alg',desc:'Conceito e representação de sistemas lineares 2×2.'},
+  {code:'EF08MA10',title:'Resolução algébrica de sistemas',sim:'sistema',tag:'alg',desc:'Métodos de substituição e adição para resolução de sistemas.'},
+  {code:'EF08MA11',title:'Modelagem com sistemas de equações',sim:'sistema',tag:'alg',desc:'Problemas cotidianos modelados por sistemas de equações.'},
 ];
 
-// 9º ANO — Geometria Avançada, Números Reais (arquivo pasted_content_5)
 const ef9_aes = [
-  // GEOMETRIA
-  {code:'EF09MA01',title:'Semelhança de triângulos retângulos',sim:'semelhanca',tag:'geo',
-   desc:'Critérios de semelhança. Razão de semelhança e proporcionalidade.'},
-  {code:'EF09MA02',title:'Relações métricas no triângulo retângulo',sim:'pitagoras',tag:'geo',
-   desc:'Altura, projeções, relações métricas. Teorema de Pitágoras como caso especial.'},
-  {code:'EF09MA14',title:'Teorema de Pitágoras',sim:'pitagoras',tag:'geo',
-   desc:'Demonstração e aplicação. a²+b²=c². Problemas de modelagem geométrica.'},
-  // NÚMEROS IRRACIONAIS E REAIS
-  {code:'EF09MA03',title:'Números racionais infinitos e dízimas',sim:'decimal',tag:'num',
-   desc:'Dízimas periódicas e não periódicas. Fração geratriz de dízima periódica.'},
-  {code:'EF09MA04',title:'Números irracionais',sim:'reta',tag:'num',
-   desc:'Conceito de irracional. √2, π, φ. Localização na reta numérica.'},
-  {code:'EF09MA05',title:'Conjunto dos números reais',sim:'decimal',tag:'num',
-   desc:'Relação ℕ⊂ℤ⊂ℚ⊂ℝ. Operações com reais. Potenciação e radiciação.'},
-  {code:'EF09MA06',title:'Operações com números reais',sim:'potencia',tag:'num',
-   desc:'Adição, subtração, multiplicação e divisão com números reais.'},
-  // EXPRESSÕES COM REAIS
-  {code:'EF09MA07',title:'Expressões algébricas com números reais',sim:'afim',tag:'alg',
-   desc:'Valor numérico de expressões algébricas envolvendo números reais e radicais.'},
+  {code:'EF09MA01',title:'Semelhança de triângulos retângulos',sim:'semelhanca',tag:'geo',desc:'Critérios de semelhança. Razão de semelhança e proporcionalidade.'},
+  {code:'EF09MA02',title:'Relações métricas no triângulo retângulo',sim:'pitagoras',tag:'geo',desc:'Altura, projeções, relações métricas. Teorema de Pitágoras como caso especial.'},
+  {code:'EF09MA14',title:'Teorema de Pitágoras',sim:'pitagoras',tag:'geo',desc:'Demonstração e aplicação. a²+b²=c². Problemas de modelagem geométrica.'},
+  {code:'EF09MA03',title:'Números racionais infinitos e dízimas',sim:'decimal',tag:'num',desc:'Dízimas periódicas e não periódicas. Fração geratriz de dízima periódica.'},
+  {code:'EF09MA04',title:'Números irracionais',sim:'reta',tag:'num',desc:'Conceito de irracional. √2, π, φ. Localização na reta numérica.'},
+  {code:'EF09MA05',title:'Conjunto dos números reais',sim:'decimal',tag:'num',desc:'Relação ℕ⊂ℤ⊂ℚ⊂ℝ. Operações com reais. Potenciação e radiciação.'},
+  {code:'EF09MA06',title:'Operações com números reais',sim:'potencia',tag:'num',desc:'Adição, subtração, multiplicação e divisão com números reais.'},
+  {code:'EF09MA07',title:'Expressões algébricas com números reais',sim:'afim',tag:'alg',desc:'Valor numérico de expressões algébricas envolvendo números reais e radicais.'},
 ];
 
-// EM (mantém estrutura anterior + alguns temas adicionais)
 const em1_aes = [
   {code:'EM13MAT101',title:'Função Afim',sim:'afim',tag:'alg',desc:'f(x)=ax+b. Coeficientes, gráfico, zeros e crescimento/decrescimento.'},
   {code:'EM13MAT102',title:'Função Quadrática',sim:'quadratica',tag:'alg',desc:'f(x)=ax²+bx+c. Parábola, vértice, eixo e raízes.'},
@@ -669,32 +604,17 @@ const em3_aes = [
   {code:'EM13MAT304',title:'Números Complexos',sim:'analitica',tag:'alg',desc:'Forma algébrica e trigonométrica. Operações e representação.'},
 ];
 
-// BANCO COMPLETO POR SÉRIE
 const seriesData = {
-  ef6:{name:'6º Ano — EF',aes:ef6_aes,
-    simuladores:['fracao','reta','multiplos','poligonos','triangulos','quadrilateros','angulos','decimal','operacoes','geometria3d'],
-    arenaChallenges:gerarQ(6),quizBank:gerarQ(6)},
-  ef7:{name:'7º Ano — EF',aes:ef7_aes,
-    simuladores:['decimal','reta','operacoes','analitica','potencia','pitagoras','sistema','fracao','graficos','geometria3d'],
-    arenaChallenges:gerarQ(7),quizBank:gerarQ(7)},
-  ef8:{name:'8º Ano — EF',aes:ef8_aes,
-    simuladores:['afim','sistema','analitica','operacoes','exponencial','pitagoras','quadratica','fracao','graficos','potencia'],
-    arenaChallenges:gerarQ(8),quizBank:gerarQ(8)},
-  ef9:{name:'9º Ano — EF',aes:ef9_aes,
-    simuladores:['pitagoras','semelhanca','decimal','reta','afim','potencia','analitica','exponencial','sistema','graficos'],
-    arenaChallenges:gerarQ(9),quizBank:gerarQ(9)},
-  em1:{name:'1ª EM',aes:em1_aes,
-    simuladores:['afim','quadratica','exponencial','trigonometria','progressao','pitagoras','sistema','analitica','ciclo','graficos'],
-    arenaChallenges:gerarQ(10),quizBank:gerarQ(10)},
-  em2:{name:'2ª EM',aes:em2_aes,
-    simuladores:['ciclo','graficos','sistema','analitica','afim','exponencial','pitagoras','quadratica','progressao','trigonometria'],
-    arenaChallenges:gerarQ(11),quizBank:gerarQ(11)},
-  em3:{name:'3ª EM',aes:em3_aes,
-    simuladores:['analitica','geometria3d','graficos','sistema','afim','ciclo','exponencial','pitagoras','quadratica','trigonometria'],
-    arenaChallenges:gerarQ(12),quizBank:gerarQ(12)},
+  ef6:{name:'6º Ano — EF',aes:ef6_aes,simuladores:['fracao','reta','multiplos','poligonos','triangulos','quadrilateros','angulos','decimal','operacoes','geometria3d'],arenaChallenges:gerarQ(6),quizBank:gerarQ(6)},
+  ef7:{name:'7º Ano — EF',aes:ef7_aes,simuladores:['decimal','reta','operacoes','analitica','potencia','pitagoras','sistema','fracao','graficos','geometria3d'],arenaChallenges:gerarQ(7),quizBank:gerarQ(7)},
+  ef8:{name:'8º Ano — EF',aes:ef8_aes,simuladores:['afim','sistema','analitica','operacoes','exponencial','pitagoras','quadratica','fracao','graficos','potencia'],arenaChallenges:gerarQ(8),quizBank:gerarQ(8)},
+  ef9:{name:'9º Ano — EF',aes:ef9_aes,simuladores:['pitagoras','semelhanca','decimal','reta','afim','potencia','analitica','exponencial','sistema','graficos'],arenaChallenges:gerarQ(9),quizBank:gerarQ(9)},
+  em1:{name:'1ª EM',aes:em1_aes,simuladores:['afim','quadratica','exponencial','trigonometria','progressao','pitagoras','sistema','analitica','ciclo','graficos'],arenaChallenges:gerarQ(10),quizBank:gerarQ(10)},
+  em2:{name:'2ª EM',aes:em2_aes,simuladores:['ciclo','graficos','sistema','analitica','afim','exponencial','pitagoras','quadratica','progressao','trigonometria'],arenaChallenges:gerarQ(11),quizBank:gerarQ(11)},
+  em3:{name:'3ª EM',aes:em3_aes,simuladores:['analitica','geometria3d','graficos','sistema','afim','ciclo','exponencial','pitagoras','quadratica','trigonometria'],arenaChallenges:gerarQ(12),quizBank:gerarQ(12)},
 };
 
-function gerarQ(serie) {
+function gerarQ(serie){
   return [
     {q:"Calcule 3/4 + 1/4.",opts:["1","1/2","3/8","7/8"],correct:0,expl:"3/4+1/4=4/4=1. Mesmos denominadores, somam-se os numeradores."},
     {q:"Qual o valor de 2³?",opts:["6","8","9","16"],correct:1,expl:"2³=2×2×2=8."},
@@ -706,40 +626,238 @@ function gerarQ(serie) {
     {q:"Catetos 3 e 4. Hipotenusa:",opts:["5","6","7","8"],correct:0,expl:"3²+4²=9+16=25; √25=5."},
     {q:"Número de diagonais de um pentágono:",opts:["3","4","5","6"],correct:2,expl:"n(n-3)/2=5·2/2=5."},
     {q:"Qual fração equivale a 0,25?",opts:["1/2","1/3","1/4","1/5"],correct:2,expl:"0,25=25/100=1/4."}
-  ].map(q=>({...q,expl:q.expl+(serie>=8?" (Série "+serie+"º)":"")}));
+  ].map(q=>({...q,expl:q.expl+(serie>=8?' (Série '+serie+'º)':'')}));
 }
 
 /* ====================================================
-   IMAGENS DOS SIMULADORES
+   ★ FIX 2 — GERADOR DE IMAGENS MATEMÁTICAS POR CANVAS ★
+   Substitui URLs externas do Unsplash por visuais
+   gerados 100% localmente com <canvas>.
    ==================================================== */
-const simImgDB = {
-  fracao:{url:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80',caption:'Frações no cotidiano: divisão de alimentos e medidas.',tag:'🥧 Frações',icon:'🍕'},
-  decimal:{url:'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=600&q=80',caption:'Sistema decimal: organização numérica do dinheiro.',tag:'🧮 Decimal',icon:'🔢'},
-  reta:{url:'https://images.unsplash.com/photo-1586075010633-2442dc3d6307?w=600&q=80',caption:'Reta numérica: régua como representação visual.',tag:'📏 Reta Numérica',icon:'📏'},
-  operacoes:{url:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=80',caption:'Operações matemáticas fundamentais.',tag:'➕ Operações',icon:'➗'},
-  multiplos:{url:'https://images.unsplash.com/photo-1508962914676-134849a727f0?w=600&q=80',caption:'MMC e MDC em ciclos e relógios.',tag:'🔵 Múltiplos',icon:'🔵'},
-  angulos:{url:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80',caption:'Ângulos presentes na arquitetura e engenharia.',tag:'📐 Ângulos',icon:'📐'},
-  poligonos:{url:'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=600&q=80',caption:'Polígonos na arquitetura e design geométrico.',tag:'🔷 Polígonos',icon:'🔷'},
-  triangulos:{url:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80',caption:'Triângulos em estruturas de engenharia.',tag:'🔺 Triângulos',icon:'🔺'},
-  quadrilateros:{url:'https://images.unsplash.com/photo-1558403194-611308249627?w=600&q=80',caption:'Quadriláteros na construção civil.',tag:'🟦 Quadriláteros',icon:'🟦'},
-  pitagoras:{url:'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=600&q=80',caption:'Pitágoras em telhados, pontes e escaladas.',tag:'📐 Pitágoras',icon:'📐'},
-  semelhanca:{url:'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?w=600&q=80',caption:'Semelhança em fotografia e cartografia.',tag:'📐 Semelhança',icon:'📐'},
-  analitica:{url:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',caption:'Plano cartesiano: base de GPS e mapas.',tag:'🗺️ Analítica',icon:'🗺️'},
-  afim:{url:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',caption:'Funções lineares: tarifas e consumo.',tag:'📈 Função Afim',icon:'📈'},
-  sistema:{url:'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=600&q=80',caption:'Sistemas usados em logística e misturas.',tag:'📈 Sistemas',icon:'📈'},
-  quadratica:{url:'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=600&q=80',caption:'Parábolas em projéteis e arcos.',tag:'🏹 Quadrática',icon:'🏹'},
-  potencia:{url:'https://images.unsplash.com/photo-1583912267550-d44d7a125e7e?w=600&q=80',caption:'Potenciação: crescimento exponencial.',tag:'🔋 Potenciação',icon:'🦠'},
-  exponencial:{url:'https://images.unsplash.com/photo-1543286386-713bdd548da4?w=600&q=80',caption:'Crescimento exponencial em pandemias.',tag:'📊 Exponencial',icon:'📊'},
-  trigonometria:{url:'https://images.unsplash.com/photo-1509228627152-72ae9ae6848d?w=600&q=80',caption:'Trigonometria em navegação e astronomia.',tag:'📡 Trigonometria',icon:'📡'},
-  ciclo:{url:'https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?w=600&q=80',caption:'Ciclo trigonométrico em ondas e marés.',tag:'🌊 Ciclo',icon:'🌊'},
-  progressao:{url:'https://images.unsplash.com/photo-1515549832467-8783363e19b6?w=600&q=80',caption:'Progressões em escadas e juros compostos.',tag:'🔢 Progressões',icon:'🔢'},
-  graficos:{url:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',caption:'Gráficos e estatísticas em pesquisas.',tag:'📊 Estatística',icon:'📊'},
-  geometria3d:{url:'https://images.unsplash.com/photo-1558403194-611308249627?w=600&q=80',caption:'Geometria 3D na arquitetura moderna.',tag:'📦 Geometria 3D',icon:'📦'},
+
+// Paleta de cores por tema
+const simColors = {
+  fracao:   {bg:'#0A1020', a:'#F5A623', b:'#4F8EF7', c:'#22C97A'},
+  decimal:  {bg:'#0D0A1F', a:'#9B6FF7', b:'#22D3EE', c:'#F5A623'},
+  reta:     {bg:'#081018', a:'#4F8EF7', b:'#F5A623', c:'#22C97A'},
+  operacoes:{bg:'#0F0A10', a:'#22D3EE', b:'#9B6FF7', c:'#F5A623'},
+  multiplos:{bg:'#080F10', a:'#22C97A', b:'#4F8EF7', c:'#F5A623'},
+  angulos:  {bg:'#100D08', a:'#F5A623', b:'#22D3EE', c:'#9B6FF7'},
+  poligonos:{bg:'#08100A', a:'#22C97A', b:'#4F8EF7', c:'#9B6FF7'},
+  triangulos:{bg:'#0A0810', a:'#9B6FF7', b:'#F5A623', c:'#22D3EE'},
+  quadrilateros:{bg:'#081018', a:'#4F8EF7', b:'#22C97A', c:'#F5A623'},
+  pitagoras:{bg:'#080D18', a:'#22D3EE', b:'#F5A623', c:'#22C97A'},
+  semelhanca:{bg:'#0A0818', a:'#9B6FF7', b:'#4F8EF7', c:'#22C97A'},
+  analitica:{bg:'#080B18', a:'#4F8EF7', b:'#F25C5C', c:'#22C97A'},
+  afim:     {bg:'#080F18', a:'#4F8EF7', b:'#22D3EE', c:'#F5A623'},
+  sistema:  {bg:'#080B18', a:'#22D3EE', b:'#9B6FF7', c:'#F5A623'},
+  quadratica:{bg:'#0A0810', a:'#9B6FF7', b:'#F25C5C', c:'#4F8EF7'},
+  potencia: {bg:'#08100A', a:'#22C97A', b:'#4F8EF7', c:'#F5A623'},
+  exponencial:{bg:'#0A1008', a:'#22C97A', b:'#F5A623', c:'#4F8EF7'},
+  trigonometria:{bg:'#080D18', a:'#4F8EF7', b:'#9B6FF7', c:'#22D3EE'},
+  ciclo:    {bg:'#08101A', a:'#22D3EE', b:'#4F8EF7', c:'#9B6FF7'},
+  progressao:{bg:'#100A08', a:'#F5A623', b:'#22C97A', c:'#4F8EF7'},
+  graficos: {bg:'#080A18', a:'#4F8EF7', b:'#9B6FF7', c:'#22D3EE'},
+  geometria3d:{bg:'#0A0818', a:'#9B6FF7', b:'#4F8EF7', c:'#22C97A'},
 };
+
+// Gera um canvas com visual matemático baseado no tema e índice da questão
+function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
+  const W = canvasEl.width  = canvasEl.offsetWidth || 360;
+  const H = canvasEl.height = 130;
+  const ctx = canvasEl.getContext('2d');
+  const col = simColors[temaSlug] || simColors.geometria3d;
+
+  // Fundo
+  ctx.fillStyle = col.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grade sutil
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Escolhe padrão visual baseado em (qi % 8)
+  const pat = qi % 8;
+  const cx = W / 2, cy = H / 2;
+
+  if (pat === 0) {
+    // Reta numérica com ponto
+    ctx.strokeStyle = col.a; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(40, cy); ctx.lineTo(W - 40, cy); ctx.stroke();
+    const step = (W - 80) / 10;
+    for (let i = 0; i <= 10; i++) {
+      const x = 40 + i * step;
+      ctx.beginPath(); ctx.moveTo(x, cy - 8); ctx.lineTo(x, cy + 8); ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    const px = 40 + 6 * step;
+    ctx.beginPath(); ctx.arc(px, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = col.a + 'AA'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = col.a; ctx.fill();
+
+  } else if (pat === 1) {
+    // Triângulo retângulo
+    const ox = 60, oy = H - 28, bx = W - 60, by = H - 28, tx = 60, ty = 28;
+    ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(bx, by); ctx.lineTo(tx, ty); ctx.closePath();
+    ctx.fillStyle = col.a + '22'; ctx.fill();
+    ctx.strokeStyle = col.a; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1;
+    ctx.strokeRect(ox, oy - 14, 14, 14);
+    ctx.fillStyle = col.b; ctx.font = 'bold 11px Space Grotesk';
+    ctx.fillText('a', ox - 18, (oy + ty) / 2);
+    ctx.fillText('b', (ox + bx) / 2 - 6, oy + 16);
+    ctx.fillStyle = col.c; ctx.fillText('c', (bx + tx) / 2 + 6, (by + ty) / 2);
+
+  } else if (pat === 2) {
+    // Pizza / fração (setores)
+    const n = 4 + (qi % 3), filled = 1 + (qi % (n - 1));
+    const R = 44;
+    for (let i = 0; i < n; i++) {
+      const s = -Math.PI / 2 + i * (2 * Math.PI / n);
+      const e = s + 2 * Math.PI / n;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, s, e); ctx.closePath();
+      ctx.fillStyle = i < filled ? col.a + 'CC' : 'rgba(40,50,70,0.8)'; ctx.fill();
+      ctx.strokeStyle = col.bg; ctx.lineWidth = 2; ctx.stroke();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+    ctx.strokeStyle = col.a + '66'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = col.b; ctx.font = 'bold 14px JetBrains Mono';
+    ctx.textAlign = 'right'; ctx.fillText(`${filled}/${n}`, W - 20, H - 18); ctx.textAlign = 'left';
+
+  } else if (pat === 3) {
+    // Gráfico de barras
+    const vals = [4, 7, 5, 9, 6].map(v => v + (qi % 3));
+    const barW = 28, gap = 14, baseY = H - 28;
+    const maxV = Math.max(...vals);
+    vals.forEach((v, i) => {
+      const x = 38 + i * (barW + gap);
+      const bh = (v / maxV) * (H - 56);
+      const grad = ctx.createLinearGradient(x, baseY - bh, x, baseY);
+      grad.addColorStop(0, col.a); grad.addColorStop(1, col.b + '88');
+      ctx.fillStyle = grad; ctx.fillRect(x, baseY - bh, barW, bh);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '9px JetBrains Mono';
+      ctx.fillText(v, x + 8, baseY - bh - 5);
+    });
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(30, H - 28); ctx.lineTo(W - 20, H - 28); ctx.stroke();
+
+  } else if (pat === 4) {
+    // Plano cartesiano com reta
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+    const a = 0.8 + (qi % 3) * 0.4, b = -30 + qi * 8;
+    ctx.strokeStyle = col.a; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, cy - (a * (0 - cx) + b));
+    ctx.lineTo(W, cy - (a * (W - cx) + b));
+    ctx.stroke();
+    // ponto
+    const px2 = cx + 40, py2 = cy - (a * 40 + b);
+    ctx.beginPath(); ctx.arc(px2, py2, 5, 0, Math.PI * 2);
+    ctx.fillStyle = col.b; ctx.fill();
+
+  } else if (pat === 5) {
+    // Polígono regular
+    const n2 = 3 + (qi % 6), R2 = 45;
+    ctx.beginPath();
+    for (let i = 0; i < n2; i++) {
+      const ang = -Math.PI / 2 + i * (2 * Math.PI / n2);
+      i === 0 ? ctx.moveTo(cx + R2 * Math.cos(ang), cy + R2 * Math.sin(ang))
+              : ctx.lineTo(cx + R2 * Math.cos(ang), cy + R2 * Math.sin(ang));
+    }
+    ctx.closePath();
+    ctx.fillStyle = col.c + '22'; ctx.fill();
+    ctx.strokeStyle = col.c; ctx.lineWidth = 2; ctx.stroke();
+    // diagonais
+    ctx.strokeStyle = col.c + '33'; ctx.lineWidth = 1;
+    for (let i = 0; i < n2; i++) {
+      for (let j = i + 2; j < n2 - (i === 0 ? 1 : 0); j++) {
+        const a1 = -Math.PI / 2 + i * (2 * Math.PI / n2);
+        const a2 = -Math.PI / 2 + j * (2 * Math.PI / n2);
+        ctx.beginPath(); ctx.moveTo(cx + R2 * Math.cos(a1), cy + R2 * Math.sin(a1));
+        ctx.lineTo(cx + R2 * Math.cos(a2), cy + R2 * Math.sin(a2)); ctx.stroke();
+      }
+    }
+
+  } else if (pat === 6) {
+    // Curva exponencial / função
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(60, 0); ctx.lineTo(60, H); ctx.stroke();
+    ctx.strokeStyle = col.a; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    for (let px = 60; px <= W - 20; px++) {
+      const x = (px - 60) / 30;
+      const y = cy - Math.pow(1.4 + qi * 0.05, x) * 18;
+      px === 60 ? ctx.moveTo(px, y) : ctx.lineTo(px, Math.max(10, Math.min(H - 10, y)));
+    }
+    ctx.stroke();
+
+  } else {
+    // Círculo unitário / ciclo
+    const R3 = 44;
+    ctx.beginPath(); ctx.arc(cx, cy, R3, 0, Math.PI * 2);
+    ctx.strokeStyle = col.a + '55'; ctx.lineWidth = 1.5; ctx.stroke();
+    // raio
+    const ang = (qi * 40) % 360 * Math.PI / 180;
+    const ex = cx + R3 * Math.cos(ang), ey = cy + R3 * Math.sin(ang);
+    ctx.strokeStyle = col.a; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+    // ponto
+    ctx.beginPath(); ctx.arc(ex, ey, 5, 0, Math.PI * 2);
+    ctx.fillStyle = col.b; ctx.fill();
+    // eixos
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx - R3 - 10, cy); ctx.lineTo(cx + R3 + 10, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy - R3 - 10); ctx.lineTo(cx, cy + R3 + 10); ctx.stroke();
+  }
+
+  // Número da questão no canto
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.font = 'bold 52px JetBrains Mono';
+  ctx.textAlign = 'right';
+  ctx.fillText(String(qi + 1).padStart(2, '0'), W - 12, H - 8);
+  ctx.textAlign = 'left';
+
+  // Gradiente de sombra inferior para o caption
+  const grad2 = ctx.createLinearGradient(0, H * 0.55, 0, H);
+  grad2.addColorStop(0, 'transparent');
+  grad2.addColorStop(1, 'rgba(4,6,12,0.88)');
+  ctx.fillStyle = grad2;
+  ctx.fillRect(0, 0, W, H);
+}
 
 /* ====================================================
    SIMULADORES
    ==================================================== */
+const simImgDB = {
+  fracao:{caption:'Frações no cotidiano: divisão de alimentos e medidas.',tag:'🥧 Frações',icon:'🍕'},
+  decimal:{caption:'Sistema decimal: organização numérica do dinheiro.',tag:'🧮 Decimal',icon:'🔢'},
+  reta:{caption:'Reta numérica: régua como representação visual.',tag:'📏 Reta Numérica',icon:'📏'},
+  operacoes:{caption:'Operações matemáticas fundamentais.',tag:'➕ Operações',icon:'➗'},
+  multiplos:{caption:'MMC e MDC em ciclos e relógios.',tag:'🔵 Múltiplos',icon:'🔵'},
+  angulos:{caption:'Ângulos presentes na arquitetura e engenharia.',tag:'📐 Ângulos',icon:'📐'},
+  poligonos:{caption:'Polígonos na arquitetura e design geométrico.',tag:'🔷 Polígonos',icon:'🔷'},
+  triangulos:{caption:'Triângulos em estruturas de engenharia.',tag:'🔺 Triângulos',icon:'🔺'},
+  quadrilateros:{caption:'Quadriláteros na construção civil.',tag:'🟦 Quadriláteros',icon:'🟦'},
+  pitagoras:{caption:'Pitágoras em telhados, pontes e escaladas.',tag:'📐 Pitágoras',icon:'📐'},
+  semelhanca:{caption:'Semelhança em fotografia e cartografia.',tag:'📐 Semelhança',icon:'📐'},
+  analitica:{caption:'Plano cartesiano: base de GPS e mapas.',tag:'🗺️ Analítica',icon:'🗺️'},
+  afim:{caption:'Funções lineares: tarifas e consumo.',tag:'📈 Função Afim',icon:'📈'},
+  sistema:{caption:'Sistemas usados em logística e misturas.',tag:'📈 Sistemas',icon:'📈'},
+  quadratica:{caption:'Parábolas em projéteis e arcos.',tag:'🏹 Quadrática',icon:'🏹'},
+  potencia:{caption:'Potenciação: crescimento exponencial.',tag:'🔋 Potenciação',icon:'🦠'},
+  exponencial:{caption:'Crescimento exponencial em pandemias.',tag:'📊 Exponencial',icon:'📊'},
+  trigonometria:{caption:'Trigonometria em navegação e astronomia.',tag:'📡 Trigonometria',icon:'📡'},
+  ciclo:{caption:'Ciclo trigonométrico em ondas e marés.',tag:'🌊 Ciclo',icon:'🌊'},
+  progressao:{caption:'Progressões em escadas e juros compostos.',tag:'🔢 Progressões',icon:'🔢'},
+  graficos:{caption:'Gráficos e estatísticas em pesquisas.',tag:'📊 Estatística',icon:'📊'},
+  geometria3d:{caption:'Geometria 3D na arquitetura moderna.',tag:'📦 Geometria 3D',icon:'📦'},
+};
+
 function _sl(id,min,max,val,step,fn){
   return `<input type="range" id="${id}" min="${min}" max="${max}" value="${val}" step="${step}"
     style="width:100%;accent-color:var(--primary);cursor:pointer;margin:4px 0;" oninput="${fn}">`;
@@ -776,7 +894,6 @@ simulators.geometria3d = function(c){
   },50);
 };
 
-// FRAÇÕES — pizza interativa
 simulators.fracao = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🥧 Frações — Pizza Interativa</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0;">
@@ -809,7 +926,6 @@ simulators.fracao = function(c){
   },60);
 };
 
-// RETA NUMÉRICA interativa
 simulators.reta = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📏 Reta Numérica Interativa</h3>${_sl('rSl',-10,10,2,1,'_rU()')}
   <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-tertiary);margin:-2px 0 5px;">
@@ -830,7 +946,6 @@ simulators.reta = function(c){
   },60);
 };
 
-// OPERAÇÕES — calculadora interativa
 simulators.operacoes = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>➕ Calculadora de Operações</h3>
   <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:5px;margin:8px 0;">
@@ -854,7 +969,6 @@ simulators.operacoes = function(c){
   };window._oC();
 };
 
-// MÚLTIPLOS — MMC/MDC interativo
 simulators.multiplos = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🔵 MMC e MDC Interativo</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;">
@@ -870,7 +984,6 @@ simulators.multiplos = function(c){
   };window._mC();
 };
 
-// ÂNGULOS — transferidor interativo
 simulators.angulos = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📐 Ângulos Interativos</h3>
   <label style="font-size:0.65rem;color:var(--text-secondary);">Ângulo α</label>
@@ -886,14 +999,10 @@ simulators.angulos = function(c){
       const rad=deg*Math.PI/180;
       const ctx=cv.getContext('2d'),W=cv.width,H=130,CX=W/2,CY=H-20,R=80;
       ctx.fillStyle='#04060D';ctx.fillRect(0,0,W,H);
-      // linha base
       ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(CX+R,CY);ctx.strokeStyle='#4F8EF7';ctx.lineWidth=2;ctx.stroke();
-      // linha do ângulo
       const ex=CX+R*Math.cos(-rad),ey=CY+R*Math.sin(-rad);
       ctx.beginPath();ctx.moveTo(CX,CY);ctx.lineTo(ex,ey);ctx.strokeStyle='#F5A623';ctx.lineWidth=2;ctx.stroke();
-      // arco
       ctx.beginPath();ctx.arc(CX,CY,30,0,-rad,deg>0);ctx.strokeStyle='rgba(245,166,35,0.6)';ctx.lineWidth=1.5;ctx.stroke();
-      // ponto de origem
       ctx.beginPath();ctx.arc(CX,CY,4,0,Math.PI*2);ctx.fillStyle='#9B6FF7';ctx.fill();
       const tipo=deg===0?'Ângulo nulo':deg<90?'Ângulo agudo':deg===90?'Ângulo reto (90°)':deg<180?'Ângulo obtuso':deg===180?'Ângulo raso (180°)':deg<360?'Ângulo côncavo':'Ângulo completo (360°)';
       document.getElementById('aGI').innerHTML=`<strong style="color:var(--warning)">${deg}°</strong> — ${tipo}`;
@@ -901,14 +1010,13 @@ simulators.angulos = function(c){
   },60);
 };
 
-// POLÍGONOS
 simulators.poligonos = function(c){
+  const nomes=['','','','Triângulo','Quadrado','Pentágono','Hexágono','Heptágono','Octógono','Eneágono','Decágono','Undecágono','Dodecágono'];
   c.innerHTML=`<div class="sim-inner"><h3>🔷 Polígonos Regulares</h3>
   <label style="font-size:0.65rem;color:var(--text-secondary);">Número de lados (n)</label>
   ${_sl('pLsl',3,12,5,1,'_pLu()')}
   <div id="pLv" style="text-align:center;font-weight:700;color:var(--info);font-size:1.1rem;">Pentágono (5 lados)</div>
   ${_cv('pLCV',150)}<div id="pLI" class="explicacao-box" style="margin-top:5px;"></div></div>`;
-  const nomes=['','','','Triângulo','Quadrado','Pentágono','Hexágono','Heptágono','Octógono','Eneágono','Decágono','Undecágono','Dodecágono'];
   setTimeout(()=>{
     const cv=document.getElementById('pLCV');if(!cv)return;
     cv.width=cv.offsetWidth||360;cv.height=150;
@@ -918,18 +1026,14 @@ simulators.poligonos = function(c){
       const ctx=cv.getContext('2d'),W=cv.width,H=150,R=55,CX=W/2,CY=H/2+5;
       ctx.fillStyle='#04060D';ctx.fillRect(0,0,W,H);
       ctx.beginPath();
-      for(let i=0;i<n;i++){
-        const a=-Math.PI/2+i*(2*Math.PI/n);
-        i===0?ctx.moveTo(CX+R*Math.cos(a),CY+R*Math.sin(a)):ctx.lineTo(CX+R*Math.cos(a),CY+R*Math.sin(a));
-      }
+      for(let i=0;i<n;i++){const a=-Math.PI/2+i*(2*Math.PI/n);i===0?ctx.moveTo(CX+R*Math.cos(a),CY+R*Math.sin(a)):ctx.lineTo(CX+R*Math.cos(a),CY+R*Math.sin(a));}
       ctx.closePath();ctx.fillStyle='rgba(79,142,247,0.12)';ctx.fill();ctx.strokeStyle='#4F8EF7';ctx.lineWidth=2;ctx.stroke();
       const angInt=((n-2)*180/n).toFixed(1);
-      document.getElementById('pLI').innerHTML=`<strong>${nomes[n]||n+'-gono'}</strong>: ${n} lados, ${n} ângulos.<br>Ângulo interno = <strong style="color:var(--warning)">${angInt}°</strong> | Soma dos ângulos = <strong style="color:var(--success)">${(n-2)*180}°</strong>`;
+      document.getElementById('pLI').innerHTML=`<strong>${nomes[n]||n+'-gono'}</strong>: ${n} lados, ${n} ângulos.<br>Ângulo interno = <strong style="color:var(--warning)">${angInt}°</strong> | Soma = <strong style="color:var(--success)">${(n-2)*180}°</strong>`;
     };window._pLu();
   },60);
 };
 
-// TRIÂNGULOS
 simulators.triangulos = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🔺 Classificação de Triângulos</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:6px 0;">
@@ -946,9 +1050,7 @@ simulators.triangulos = function(c){
       const cc=parseFloat(document.getElementById('tC').value)||1;
       const ctx=cv.getContext('2d'),W=cv.width,H=130,sc=Math.min(W/(a+b+cc+2)*3,18);
       ctx.fillStyle='#04060D';ctx.fillRect(0,0,W,H);
-      // verifica triângulo válido
       if(a+b<=cc||a+cc<=b||b+cc<=a){document.getElementById('tI').innerHTML='⚠️ Esses lados não formam triângulo!';return;}
-      // calcula ângulos
       const cosC=(a*a+b*b-cc*cc)/(2*a*b);
       const angC=Math.acos(Math.max(-1,Math.min(1,cosC)));
       const x1=W/2-a*sc/2,y1=H-20;
@@ -956,7 +1058,6 @@ simulators.triangulos = function(c){
       const x3=x1+a*sc*Math.cos(Math.PI-angC),y3=H-20-a*sc*Math.sin(Math.PI-angC);
       ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.closePath();
       ctx.fillStyle='rgba(79,142,247,0.1)';ctx.fill();ctx.strokeStyle='#4F8EF7';ctx.lineWidth=2;ctx.stroke();
-      // labels
       ctx.fillStyle='#22D3EE';ctx.font='bold 11px Space Grotesk';
       ctx.fillText(`a=${a}`,(x1+x3)/2-18,(y1+y3)/2);
       ctx.fillText(`b=${b}`,(x2+x3)/2+4,(y2+y3)/2);
@@ -969,7 +1070,6 @@ simulators.triangulos = function(c){
   },60);
 };
 
-// QUADRILÁTEROS
 simulators.quadrilateros = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🟦 Quadriláteros Interativos</h3>
   <select id="qTipo" style="width:100%;background:var(--surface-2);border:1px solid var(--border-2);border-radius:7px;padding:7px;color:var(--text);font-weight:700;margin-bottom:8px;" onchange="_qU()">
@@ -993,13 +1093,12 @@ simulators.quadrilateros = function(c){
       const p=pts[t]||pts.quad;
       ctx.beginPath();ctx.moveTo(...p[0]);p.slice(1).forEach(pt=>ctx.lineTo(...pt));ctx.closePath();
       ctx.fillStyle='rgba(155,111,247,0.15)';ctx.fill();ctx.strokeStyle='#9B6FF7';ctx.lineWidth=2;ctx.stroke();
-      const nomes2={quad:'Quadrado: 4 lados iguais, 4 ângulos retos. Diagonais iguais e perpendiculares.',ret:'Retângulo: lados opostos iguais, 4 ângulos retos. Diagonais iguais.',los:'Losango: 4 lados iguais, diagonais perpendiculares que se bissetam.',para:'Paralelogramo: lados e ângulos opostos iguais. Diagonais se bissetam.',trap:'Trapézio: um par de lados paralelos (bases). Pode ser isósceles ou escaleno.'};
+      const nomes2={quad:'Quadrado: 4 lados iguais, 4 ângulos retos.',ret:'Retângulo: lados opostos iguais, 4 ângulos retos.',los:'Losango: 4 lados iguais, diagonais perpendiculares.',para:'Paralelogramo: lados e ângulos opostos iguais.',trap:'Trapézio: um par de lados paralelos (bases).'};
       document.getElementById('qI').innerHTML=nomes2[t];
     };window._qU();
   },60);
 };
 
-// PITÁGORAS interativo
 simulators.pitagoras = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📐 Teorema de Pitágoras</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0;">
@@ -1028,7 +1127,6 @@ simulators.pitagoras = function(c){
   },60);
 };
 
-// SEMELHANÇA — razão interativa
 simulators.semelhanca = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📐 Semelhança de Triângulos</h3>
   <label style="font-size:0.65rem;color:var(--text-secondary);">Razão k</label>${_sl('sK',0.5,4,2,0.1,'_sU()')}
@@ -1056,7 +1154,6 @@ simulators.semelhanca = function(c){
   },60);
 };
 
-// PLANO CARTESIANO / GEOMETRIA ANALÍTICA
 simulators.analitica = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🗺️ Plano Cartesiano</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:6px 0;">
@@ -1103,7 +1200,6 @@ simulators.analitica = function(c){
   },60);
 };
 
-// FUNÇÃO AFIM
 simulators.afim = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📈 Função Afim f(x)=ax+b</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0;">
@@ -1130,7 +1226,6 @@ simulators.afim = function(c){
   },60);
 };
 
-// SISTEMA
 simulators.sistema = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>📈 Sistema 2×2</h3>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:6px 0;">
@@ -1148,7 +1243,6 @@ simulators.sistema = function(c){
   };window._sC();
 };
 
-// POTENCIAÇÃO
 simulators.potencia = function(c){
   c.innerHTML=`<div class="sim-inner"><h3>🔋 Potenciação Interativa</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0;">
@@ -1167,48 +1261,28 @@ simulators.potencia = function(c){
   };window._ptC();
 };
 
-// QUADRÁTICA, EXPONENCIAL, TRIGONOMETRIA, CICLO, PROGRESSÃO, GRÁFICOS (resumidos)
-simulators.quadratica = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📈 Função Quadrática f(x)=ax²+bx+c</h3><p>Use o modal de simulação completo para interatividade. Parábola: vértice e raízes pela fórmula de Bhaskara.</p><div class="explicacao-box">f(x)=x²−4x+3 → Vértice(2,−1), raízes x=1 e x=3, Δ=4</div></div>`;};
-simulators.exponencial = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📊 Função Exponencial f(x)=aˣ</h3><p>Crescimento (a>1) e decaimento (0<a<1) exponencial.</p><div class="explicacao-box">f(x)=2ˣ: f(0)=1, f(1)=2, f(2)=4, f(3)=8, f(4)=16…</div></div>`;};
+simulators.quadratica = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📈 Função Quadrática f(x)=ax²+bx+c</h3><p>Parábola: vértice e raízes pela fórmula de Bhaskara.</p><div class="explicacao-box">f(x)=x²−4x+3 → Vértice(2,−1), raízes x=1 e x=3, Δ=4</div></div>`;};
+simulators.exponencial = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📊 Função Exponencial f(x)=aˣ</h3><p>Crescimento (a>1) e decaimento (0&lt;a&lt;1) exponencial.</p><div class="explicacao-box">f(x)=2ˣ: f(0)=1, f(1)=2, f(2)=4, f(3)=8, f(4)=16…</div></div>`;};
 simulators.trigonometria = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📐 Trigonometria</h3><p>sen30°=0,5 | cos60°=0,5 | tg45°=1</p><div class="explicacao-box">Seno: oposto/hipotenusa | Cosseno: adjacente/hipotenusa | Tangente: oposto/adjacente</div></div>`;};
 simulators.ciclo = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>⭕ Ciclo Trigonométrico</h3><p>Seno, cosseno e tangente para qualquer ângulo usando o círculo unitário.</p><div class="explicacao-box">sen90°=1, cos90°=0 | sen180°=0, cos180°=−1 | sen270°=−1</div></div>`;};
 simulators.progressao = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>🔢 Progressões</h3><p>PA: aₙ=a₁+(n-1)r | PG: aₙ=a₁·qⁿ⁻¹</p><div class="explicacao-box">PA: 2,5,8,11… (r=3) | PG: 2,4,8,16… (q=2)</div></div>`;};
-simulators.graficos = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📊 Estatística e Gráficos</h3><p>Média aritmética, moda, mediana, desvio. Interpretação de gráficos de barras, setores e linhas.</p><div class="explicacao-box">Dados: 4,7,3,8,5 → Média=5,4 | Mediana=5 | Moda=não há</div></div>`;};
+simulators.graficos = (c)=>{c.innerHTML=`<div class="sim-inner"><h3>📊 Estatística e Gráficos</h3><p>Média aritmética, moda, mediana, desvio. Interpretação de gráficos.</p><div class="explicacao-box">Dados: 4,7,3,8,5 → Média=5,4 | Mediana=5 | Moda=não há</div></div>`;};
 
 /* ====================================================
    TIPOS DE ATIVIDADE
    ==================================================== */
 const tiposAtv = [
-  {id:0,emoji:'📝',nome:'Resolução de Problemas',
-   descricao:'Questões diretas com cálculo algébrico e procedimentos.',
-   abordagem:'resolução de problemas matemáticos diretos com cálculo algébrico, numérico ou geométrico. 4 alternativas objetivas (A, B, C, D). Foque em procedimentos e fórmulas.'},
-  {id:1,emoji:'🌍',nome:'Contextualizada',
-   descricao:'Situações do cotidiano brasileiro com dados reais.',
+  {id:0,emoji:'📝',nome:'Resolução de Problemas',descricao:'Questões diretas com cálculo algébrico e procedimentos.',
+   abordagem:'resolução de problemas matemáticos diretos com cálculo algébrico, numérico ou geométrico. 4 alternativas objetivas (A, B, C, D).'},
+  {id:1,emoji:'🌍',nome:'Contextualizada',descricao:'Situações do cotidiano brasileiro com dados reais.',
    abordagem:'situações-problema do cotidiano: mercado, culinária, esportes, arquitetura. 4 alternativas. Use contextos familiares aos alunos brasileiros.'},
-  {id:2,emoji:'🔬',nome:'Investigativa',
-   descricao:'Padrões, sequências e raciocínio indutivo.',
-   abordagem:'investigação de padrões, reconhecimento de regularidades e generalização. 4 alternativas. Apresente sequências incompletas e situações de descoberta.'},
-  {id:3,emoji:'🎨',nome:'Criativa',
-   descricao:'Matemática com arte, música e arquitetura.',
-   abordagem:'conexões interdisciplinares: arte, arquitetura, música, natureza. 4 alternativas. Use analogias criativas e contextos inusitados.'},
-  {id:4,emoji:'🏆',nome:'Desafio Olímpico',
-   descricao:'Nível OBMEP: raciocínio lógico avançado.',
+  {id:2,emoji:'🔬',nome:'Investigativa',descricao:'Padrões, sequências e raciocínio indutivo.',
+   abordagem:'investigação de padrões, reconhecimento de regularidades e generalização. 4 alternativas.'},
+  {id:3,emoji:'🎨',nome:'Criativa',descricao:'Matemática com arte, música e arquitetura.',
+   abordagem:'conexões interdisciplinares: arte, arquitetura, música, natureza. 4 alternativas.'},
+  {id:4,emoji:'🏆',nome:'Desafio Olímpico',descricao:'Nível OBMEP: raciocínio lógico avançado.',
    abordagem:'nível OBMEP/competições, múltiplos passos e elegância matemática. 4 alternativas. Alta dificuldade progressiva.'}
 ];
-
-// Banco de imagens para questões
-const qImgDB = {
-  fraction:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=75',
-  pizza:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&q=75',
-  triangle:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=500&q=75',
-  geometry:'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=500&q=75',
-  graph:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=75',
-  money:'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=500&q=75',
-  ruler:'https://images.unsplash.com/photo-1586075010633-2442dc3d6307?w=500&q=75',
-  architecture:'https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=500&q=75',
-  algebra:'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=500&q=75',
-  nature:'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500&q=75',
-};
 
 /* ====================================================
    ESTADO DA ATIVIDADE
@@ -1261,20 +1335,18 @@ function _setLoading(msg='Gerando atividade com IA…'){
 
 async function carregarAtv(tipoIdx){
   const tipo=tiposAtv[tipoIdx];
-  const sd=seriesData[atvState.serie]||seriesData.ef6;
   const k=`${atvState.tema}_${atvState.serie}_${tipoIdx}`;
   _setLoading(`Gerando ${tipo.emoji} ${tipo.nome}… aguarde`);
   if(atvState.cache[k]){renderAtv(atvState.cache[k],tipo);return;}
 
-  // Monta contexto curricular detalhado baseado na série
   const curriculoInfo = {
-    ef6:`6º Ano EF — Currículo Paulista: Frações (como resultado de divisão, fração de quantidade, equivalência, simplificação, operações, forma mista), Geometria (ângulos, polígonos, triângulos, quadriláteros)`,
-    ef7:`7º Ano EF — Currículo Paulista: Números Racionais (decimais, operações, reta numérica), Plano Cartesiano (polígonos, simétricos), Áreas (retângulo, triângulo, decomposição de figuras planas)`,
-    ef8:`8º Ano EF — Currículo Paulista: Álgebra (expressões algébricas, valor numérico, simplificação), Equações 1º grau (modelagem, duas incógnitas, plano cartesiano), Sistemas de equações (resolução algébrica e gráfica)`,
-    ef9:`9º Ano EF — Currículo Paulista: Semelhança de triângulos retângulos, Relações métricas, Teorema de Pitágoras, Dízimas e fração geratriz, Números irracionais, Conjunto dos reais, Expressões algébricas com reais`,
-    em1:`1ª série EM — Funções: Afim, Quadrática, Exponencial, Logaritmos. Trigonometria no triângulo retângulo. Progressões AP e GP.`,
-    em2:`2ª série EM — Ciclo trigonométrico, Equações trigonométricas, Matrizes, Estatística e Probabilidade.`,
-    em3:`3ª série EM — Geometria Analítica, Geometria Espacial, Combinatória, Números Complexos.`,
+    ef6:`6º Ano EF — Currículo Paulista: Frações, Geometria (ângulos, polígonos, triângulos, quadriláteros)`,
+    ef7:`7º Ano EF — Currículo Paulista: Números Racionais, Plano Cartesiano, Áreas`,
+    ef8:`8º Ano EF — Currículo Paulista: Álgebra, Equações 1º grau, Sistemas de equações`,
+    ef9:`9º Ano EF — Currículo Paulista: Semelhança, Teorema de Pitágoras, Números Reais`,
+    em1:`1ª série EM — Funções Afim, Quadrática, Exponencial, Logaritmos, Trigonometria, Progressões`,
+    em2:`2ª série EM — Ciclo trigonométrico, Matrizes, Estatística, Probabilidade`,
+    em3:`3ª série EM — Geometria Analítica, Geometria Espacial, Combinatória, Complexos`,
   }[atvState.serie]||'';
 
   const prompt=`Você é professor de matemática do estado de São Paulo.
@@ -1287,15 +1359,14 @@ OBRIGATÓRIO:
 2. UMA alternativa correta (índice 0=A,1=B,2=C,3=D)
 3. Explicação detalhada (2-3 frases) da resposta correta
 4. Dificuldade crescente (questões 1-3 fáceis, 4-7 médias, 8-10 difíceis)
-5. Para cada questão: "imagemKeyword" (1 palavra em inglês) e "imagemCaption" (max 55 chars em pt-BR)
-6. As questões DEVEM ser sobre ${atvState.tituloAE} especificamente
+5. Para cada questão: "imagemKeyword" (1 palavra) e "imagemCaption" (max 55 chars em pt-BR)
 
 Responda APENAS JSON válido sem markdown:
 {"questoes":[{"enunciado":"","opcoes":["A. ","B. ","C. ","D. "],"correta":0,"explicacao":"","imagemKeyword":"","imagemCaption":""}]}`;
 
   try{
     const ctrl=new AbortController();
-    const tid=setTimeout(()=>ctrl.abort(),18000);
+    const tid=setTimeout(()=>ctrl.abort(),20000);
     const delays=[1500,3000,6000,10000];
     let resp;
     for(let t=0;t<4;t++){
@@ -1311,8 +1382,7 @@ Responda APENAS JSON válido sem markdown:
         if(resp.status===429||resp.status>=500){
           const st=document.querySelector('#atvBody .loading-status');
           if(st)st.textContent=`⏳ Aguardando (tentativa ${t+2}/4)…`;
-          await new Promise(r=>setTimeout(r,delays[t]));
-          continue;
+          await new Promise(r=>setTimeout(r,delays[t]));continue;
         }
         break;
       }catch(e){
@@ -1329,8 +1399,6 @@ Responda APENAS JSON válido sem markdown:
     const parsed=JSON.parse(raw);
     if(!parsed.questoes||parsed.questoes.length<5)throw new Error('Questões insuficientes');
     const qs=parsed.questoes.slice(0,10).map((q,i)=>{
-      const kw=(q.imagemKeyword||'').toLowerCase();
-      q._imgUrl=qImgDB[kw]||Object.values(qImgDB)[i%Object.keys(qImgDB).length];
       q._imgCaption=q.imagemCaption||`Questão ${i+1}: ${atvState.tituloAE}`;
       return q;
     });
@@ -1342,31 +1410,103 @@ Responda APENAS JSON válido sem markdown:
   }
 }
 
-function gerarFallback(titulo,tipoIdx,temaSlug){
+function gerarFallback(titulo,tipoIdx){
   const tipo=tiposAtv[tipoIdx];
-  const imgUrl=(simImgDB[temaSlug]||simImgDB.geometria3d).url;
   return Array.from({length:10},(_,i)=>({
     enunciado:`[${tipo.nome}] Questão ${i+1} sobre ${titulo}. Se f(x) = ${i+2}x + ${i+1}, qual o valor de f(${i+1})?`,
     opcoes:[`A. ${(i+2)*(i+1)+(i+1)}`,`B. ${(i+2)*(i+1)}`,`C. ${i+3}`,`D. ${(i+2)*(i+2)}`],
     correta:0,
     explicacao:`Substituindo x=${i+1}: f(${i+1})=${i+2}·${i+1}+${i+1}=${(i+2)*(i+1)+(i+1)}. Tema: ${titulo}.`,
-    _imgUrl:imgUrl,_imgCaption:`Contexto: ${titulo}`
+    _imgCaption:`Contexto matemático: ${titulo}`
   }));
 }
 
-function gerarCodigoAtv(t,s,ti){
+/* ====================================================
+   ★ FIX 1 — GERAÇÃO E LEITURA CORRETA DO LINK ★
+   ==================================================== */
+
+function gerarCodigoAtv(t, s, ti){
   const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let r='';for(let i=0;i<6;i++)r+=c[Math.floor(Math.random()*c.length)];
   return `${s.toUpperCase()}-${t.toUpperCase().slice(0,4)}-T${ti}-${r}`;
 }
 
-function renderAtv(qs,tipo){
+/**
+ * Gera o link correto para o GitHub Pages.
+ * window.location.href sem parâmetros = base do repositório.
+ * Removemos qualquer ?query e #hash existente para obter a URL limpa.
+ */
+function gerarLinkAtv(codigo){
+  const base = window.location.href.split('?')[0].split('#')[0];
+  return `${base}?atv=${encodeURIComponent(codigo)}`;
+}
+
+/**
+ * Lê o parâmetro ?atv= da URL ao carregar a página.
+ * Se encontrado, exibe um banner e abre a atividade automaticamente
+ * após a série correta ser carregada.
+ */
+function lerParamAtv(){
+  const params = new URLSearchParams(window.location.search);
+  const cod = params.get('atv');
+  if(!cod) return;
+
+  // Decodifica o código: SERIE-TEMA-TIPO-RANDOM
+  // ex: EF8-AFIM-T0-UQHG2T → serie=ef8, tema=afim, tipo=0
+  const parts = cod.split('-');
+  if(parts.length < 4) return;
+
+  const serieRaw = parts[0].toLowerCase();       // "ef8"
+  const temaRaw  = parts[1].toLowerCase();       // "afim"
+  const tipoRaw  = parseInt(parts[2].replace('T','')) || 0;
+
+  // Mapeia serie do código para a chave do seriesData
+  const serieMap = {
+    ef6:'ef6', ef7:'ef7', ef8:'ef8', ef9:'ef9',
+    em1:'em1', em2:'em2', em3:'em3'
+  };
+  const serieKey = serieMap[serieRaw] || 'ef6';
+
+  // Busca a AE correspondente ao tema, ou usa o nome do tema diretamente
+  const data = seriesData[serieKey];
+  const ae = data ? data.aes.find(a => a.sim === temaRaw || a.code.toLowerCase().includes(temaRaw)) : null;
+  const titulo = ae ? ae.title : (nomesSim[temaRaw] || temaRaw);
+
+  // Banner de aviso
+  const banner = document.createElement('div');
+  banner.className = 'atv-link-banner';
+  banner.innerHTML = `✅ <strong>Atividade compartilhada carregada:</strong> ${titulo} — ${(seriesData[serieKey]||{}).name||serieKey}
+    <button class="btn-sm" style="margin-left:auto;" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('page-home').prepend(banner);
+
+  // Seleciona a série correta e abre a atividade
+  selectSerie(serieKey);
+  document.querySelectorAll('.serie-btn').forEach(b=>{
+    if(b.textContent.trim() === (seriesData[serieKey]||{}).name||'') b.classList.add('active');
+  });
+
+  // Pequeno delay para garantir que a UI está pronta
+  setTimeout(()=>{
+    // Seleciona o tipo correto no modal
+    atvState.tipoIdx = tipoRaw;
+    openAtvModal(temaRaw, titulo, serieKey).then(()=>{
+      // Força o tipo correto após abrir
+      const tipoBtn = document.querySelector(`.tipo-btn[data-tipo="${tipoRaw}"]`);
+      if(tipoBtn && tipoRaw !== 0){
+        selecionarTipo(tipoRaw, tipoBtn);
+      }
+    });
+  }, 400);
+}
+
+function renderAtv(qs, tipo){
   atvState.questoes=qs;
   atvState.respostas=new Array(qs.length).fill(null);
   const cod=gerarCodigoAtv(atvState.tema,atvState.serie,atvState.tipoIdx);
   atvState.codigo=cod;
-  const proto=window.location.protocol,host=window.location.host,path=window.location.pathname.replace(/\/+$/,'')||'/';
-  const link=`${proto}//${host}${path}?atv=${encodeURIComponent(cod)}`;
+
+  // ★ FIX 1: usa gerarLinkAtv() para URL correta
+  const link = gerarLinkAtv(cod);
   document.getElementById('atvShareInput').value=link;
   document.getElementById('atvShareBox').style.display='block';
   document.getElementById('atvRespondidas').textContent=`0/${qs.length}`;
@@ -1386,13 +1526,13 @@ function renderAtv(qs,tipo){
           <span class="opcao-letra">${letras[oi]}</span>
           <span>${opt.replace(/^[A-Da-d][.)]\s*/,'')}</span>
         </div>`).join('');
+      // ★ FIX 2: canvas em vez de <img>
       return `<div class="questao-item" id="qi_${qi}">
         <div class="questao-num"><span class="q-badge">${String(qi+1).padStart(2,'0')}</span><span style="color:var(--text-tertiary);">${tipo.emoji} ${tipo.nome}</span></div>
         <div class="questao-enunciado">${q.enunciado}</div>
-        <div class="questao-img" id="qiw_${qi}">
-          <div class="qi-skeleton" id="qis_${qi}"><div class="qi-skeleton-ring"></div><div class="qi-skeleton-txt">🤖 Carregando…</div></div>
-          <img id="qii_${qi}" src="" data-src="${q._imgUrl||''}" alt="Ilustração" style="opacity:0;transition:opacity 0.5s;">
-          <div class="qi-badge">🤖 Visual</div>
+        <div class="questao-img" id="qiw_${qi}" style="position:relative;">
+          <canvas id="qic_${qi}" style="width:100%;display:block;border-radius:0;"></canvas>
+          <div class="qi-badge">📐 Visual</div>
           <div class="qi-caption">${q._imgCaption||''}</div>
         </div>
         <div class="questao-opcoes">${opcsHtml}</div>
@@ -1400,24 +1540,11 @@ function renderAtv(qs,tipo){
       </div>`;
     }).join('')}`;
 
-  // Carrega imagens escalonadas
-  qs.forEach((_,qi)=>setTimeout(()=>_carregarQImg(qi),qi*120));
-}
-
-function _carregarQImg(qi){
-  const img=document.getElementById(`qii_${qi}`);if(!img)return;
-  const src=img.getAttribute('data-src');if(!src){_qImgErr(qi);return;}
-  const tmp=new Image();
-  tmp.crossOrigin='anonymous';
-  tmp.onload=()=>{img.src=src;img.style.opacity='1';img.classList.add('qi-ok');const sk=document.getElementById(`qis_${qi}`);if(sk)sk.style.opacity='0';};
-  tmp.onerror=()=>_qImgErr(qi);
-  tmp.src=src;
-}
-
-function _qImgErr(qi){
-  const w=document.getElementById(`qiw_${qi}`);const s=document.getElementById(`qis_${qi}`);
-  if(s)s.innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text-tertiary);font-size:0.68rem;font-family:'JetBrains Mono';">📐<span>Conteúdo matemático</span></div>`;
-  if(w){w.style.minHeight='52px';w.style.maxHeight='52px';}
+  // ★ FIX 2: renderiza os canvas escalonados
+  qs.forEach((_,qi)=>setTimeout(()=>{
+    const cv=document.getElementById(`qic_${qi}`);
+    if(cv) gerarCanvasQuestao(cv, atvState.tema, qi);
+  }, qi*60));
 }
 
 function responderAtv(qi,oi){
@@ -1499,17 +1626,10 @@ function openSimPopup(tipo, titulo, anchorEl){
   document.getElementById('simBody').innerHTML='';
   document.getElementById('simPlaceholderIcon').textContent=info.icon||'📐';
   document.getElementById('simPlaceholder').style.opacity='1';
-  // Carrega imagem
   const imgEl=document.getElementById('simImg');
   imgEl.classList.remove('loaded');imgEl.src='';
-  const tmp=new Image();tmp.crossOrigin='anonymous';
-  tmp.onload=()=>{imgEl.src=info.url;imgEl.classList.add('loaded');document.getElementById('simPlaceholder').style.opacity='0';};
-  tmp.onerror=()=>{document.getElementById('simPlaceholder').querySelector('span').textContent=info.caption.slice(0,40)+'…';};
-  tmp.src=info.url;
-  // Renderiza simulador
   if(simulators[tipo])simulators[tipo](document.getElementById('simBody'));
   else document.getElementById('simBody').innerHTML=`<div class="sim-inner"><p>Simulador em construção.</p></div>`;
-  // Posiciona popup
   const popup=document.getElementById('simPopup');
   popup.style.display='block';
   document.getElementById('simOverlay').classList.add('active');
@@ -1567,13 +1687,22 @@ function selectSerie(id,btn){
   if(btn){
     const label=btn.textContent;
     document.querySelectorAll('.serie-btn').forEach(b=>{if(b.textContent===label)b.classList.add('active');});
+  } else {
+    // Seleciona pelo id quando chamado sem botão (ex: via lerParamAtv)
+    const names=['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
+    const keys=['ef6','ef7','ef8','ef9','em1','em2','em3'];
+    const idx=keys.indexOf(id);
+    if(idx>=0){
+      document.querySelectorAll('.serie-btn').forEach(b=>{
+        if(b.textContent.trim()===names[idx])b.classList.add('active');
+      });
+    }
   }
   renderAEs();renderSimuladores();renderArena();renderQuiz();renderProfessor();
   renderTemasPills();
   updateProgress();
 }
 
-// Extrai unidades temáticas únicas da série atual
 function getTemasUnicos(){
   if(!currentSerie)return[];
   const data=seriesData[currentSerie];
@@ -1685,7 +1814,6 @@ function answerArena(sel){
 }
 
 function nextArenaQ(){displayArenaQ();}
-
 function finishArena(){
   document.getElementById('arenaQ').style.display='none';
   document.getElementById('arenaResult').style.display='block';
@@ -1774,6 +1902,9 @@ function initSelectors(){
   document.querySelectorAll('.serie-nav').forEach(nav=>{
     const first=nav.querySelector('.serie-btn');if(first)first.classList.add('active');
   });
+
+  // ★ FIX 1: lê parâmetro ?atv= da URL
+  lerParamAtv();
 }
 initSelectors();
 </script>
