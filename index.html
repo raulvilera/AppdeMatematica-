@@ -327,6 +327,10 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
   border-radius:var(--radius-sm);padding:0.4rem 0.75rem;font-size:0.7rem;
   font-weight:700;color:white;cursor:pointer;white-space:nowrap;transition:0.2s;flex-shrink:0;}
 .share-copy:hover{opacity:0.85;}
+.share-ver{background:rgba(34,201,122,0.15);border:1px solid rgba(34,201,122,0.4);
+  border-radius:var(--radius-sm);padding:0.4rem 0.75rem;font-size:0.7rem;
+  font-weight:700;color:var(--success);cursor:pointer;white-space:nowrap;transition:0.2s;flex-shrink:0;}
+.share-ver:hover{opacity:0.85;}
 
 /* ── BANNER LINK ATIVO ── */
 .atv-link-banner{background:linear-gradient(135deg,rgba(34,201,122,0.1),rgba(79,142,247,0.08));
@@ -410,10 +414,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
       </button>
     </div>
     <div class="share-box" id="atvShareBox" style="display:none;margin:0.75rem 1rem 0;">
-      <div class="share-box-title">🔗 Link para alunos</div>
+      <div class="share-box-title">🔗 Compartilhar com alunos</div>
       <div class="share-row">
         <input type="text" class="share-input" id="atvShareInput" readonly>
         <button class="share-copy" onclick="copiarLinkAtv()">📋 Copiar</button>
+        <button class="share-ver" onclick="verLinkAtv()">🔗 Ver</button>
       </div>
     </div>
     <div class="atv-body" id="atvBody">
@@ -525,6 +530,32 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* ====================================================
+   ★ CONFIGURAÇÃO DE URL BASE
+   Defina aqui a URL do seu GitHub Pages para que os
+   links compartilháveis funcionem corretamente.
+   Exemplo: 'https://seuusuario.github.io/mathem-sp'
+   Deixe vazio para tentar detectar automaticamente.
+   ==================================================== */
+const APP_BASE_URL = '';  // ← Configure aqui se necessário
+
+/**
+ * Retorna a URL base da aplicação de forma confiável.
+ * Em ambiente de arquivo local ou sandbox (about:srcdoc),
+ * usa APP_BASE_URL configurado acima.
+ */
+function getAppBaseUrl() {
+  const href = window.location.href;
+  // Detecta ambientes inválidos: about:srcdoc, blob:, file:, localhost sem path
+  const isInvalid = href.startsWith('about:') || href.startsWith('blob:') || href.startsWith('file:');
+  if (isInvalid) {
+    return APP_BASE_URL || 'https://seusite.github.io/mathem-sp';
+  }
+  // URL real: remove query e hash, garante barra final no path
+  const url = new URL(href);
+  return url.origin + url.pathname.replace(/\/$/, '');
+}
+
+/* ====================================================
    BANCO CURRICULAR COMPLETO
    ==================================================== */
 
@@ -630,12 +661,9 @@ function gerarQ(serie){
 }
 
 /* ====================================================
-   ★ FIX 2 — GERADOR DE IMAGENS MATEMÁTICAS POR CANVAS ★
-   Substitui URLs externas do Unsplash por visuais
-   gerados 100% localmente com <canvas>.
+   ★ GERADOR DE IMAGENS MATEMÁTICAS POR CANVAS
    ==================================================== */
 
-// Paleta de cores por tema
 const simColors = {
   fracao:   {bg:'#0A1020', a:'#F5A623', b:'#4F8EF7', c:'#22C97A'},
   decimal:  {bg:'#0D0A1F', a:'#9B6FF7', b:'#22D3EE', c:'#F5A623'},
@@ -661,29 +689,24 @@ const simColors = {
   geometria3d:{bg:'#0A0818', a:'#9B6FF7', b:'#4F8EF7', c:'#22C97A'},
 };
 
-// Gera um canvas com visual matemático baseado no tema e índice da questão
 function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
   const W = canvasEl.width  = canvasEl.offsetWidth || 360;
   const H = canvasEl.height = 130;
   const ctx = canvasEl.getContext('2d');
   const col = simColors[temaSlug] || simColors.geometria3d;
 
-  // Fundo
   ctx.fillStyle = col.bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Grade sutil
   ctx.strokeStyle = 'rgba(255,255,255,0.04)';
   ctx.lineWidth = 1;
   for (let x = 0; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
   for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
 
-  // Escolhe padrão visual baseado em (qi % 8)
   const pat = qi % 8;
   const cx = W / 2, cy = H / 2;
 
   if (pat === 0) {
-    // Reta numérica com ponto
     ctx.strokeStyle = col.a; ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.moveTo(40, cy); ctx.lineTo(W - 40, cy); ctx.stroke();
     const step = (W - 80) / 10;
@@ -696,9 +719,7 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     ctx.fillStyle = col.a + 'AA'; ctx.fill();
     ctx.beginPath(); ctx.arc(px, cy, 5, 0, Math.PI * 2);
     ctx.fillStyle = col.a; ctx.fill();
-
   } else if (pat === 1) {
-    // Triângulo retângulo
     const ox = 60, oy = H - 28, bx = W - 60, by = H - 28, tx = 60, ty = 28;
     ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(bx, by); ctx.lineTo(tx, ty); ctx.closePath();
     ctx.fillStyle = col.a + '22'; ctx.fill();
@@ -709,9 +730,7 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     ctx.fillText('a', ox - 18, (oy + ty) / 2);
     ctx.fillText('b', (ox + bx) / 2 - 6, oy + 16);
     ctx.fillStyle = col.c; ctx.fillText('c', (bx + tx) / 2 + 6, (by + ty) / 2);
-
   } else if (pat === 2) {
-    // Pizza / fração (setores)
     const n = 4 + (qi % 3), filled = 1 + (qi % (n - 1));
     const R = 44;
     for (let i = 0; i < n; i++) {
@@ -725,9 +744,7 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     ctx.strokeStyle = col.a + '66'; ctx.lineWidth = 1.5; ctx.stroke();
     ctx.fillStyle = col.b; ctx.font = 'bold 14px JetBrains Mono';
     ctx.textAlign = 'right'; ctx.fillText(`${filled}/${n}`, W - 20, H - 18); ctx.textAlign = 'left';
-
   } else if (pat === 3) {
-    // Gráfico de barras
     const vals = [4, 7, 5, 9, 6].map(v => v + (qi % 3));
     const barW = 28, gap = 14, baseY = H - 28;
     const maxV = Math.max(...vals);
@@ -742,9 +759,7 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     });
     ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(30, H - 28); ctx.lineTo(W - 20, H - 28); ctx.stroke();
-
   } else if (pat === 4) {
-    // Plano cartesiano com reta
     ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
@@ -754,13 +769,10 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     ctx.moveTo(0, cy - (a * (0 - cx) + b));
     ctx.lineTo(W, cy - (a * (W - cx) + b));
     ctx.stroke();
-    // ponto
     const px2 = cx + 40, py2 = cy - (a * 40 + b);
     ctx.beginPath(); ctx.arc(px2, py2, 5, 0, Math.PI * 2);
     ctx.fillStyle = col.b; ctx.fill();
-
   } else if (pat === 5) {
-    // Polígono regular
     const n2 = 3 + (qi % 6), R2 = 45;
     ctx.beginPath();
     for (let i = 0; i < n2; i++) {
@@ -771,7 +783,6 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
     ctx.closePath();
     ctx.fillStyle = col.c + '22'; ctx.fill();
     ctx.strokeStyle = col.c; ctx.lineWidth = 2; ctx.stroke();
-    // diagonais
     ctx.strokeStyle = col.c + '33'; ctx.lineWidth = 1;
     for (let i = 0; i < n2; i++) {
       for (let j = i + 2; j < n2 - (i === 0 ? 1 : 0); j++) {
@@ -781,9 +792,7 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
         ctx.lineTo(cx + R2 * Math.cos(a2), cy + R2 * Math.sin(a2)); ctx.stroke();
       }
     }
-
   } else if (pat === 6) {
-    // Curva exponencial / função
     ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(60, 0); ctx.lineTo(60, H); ctx.stroke();
@@ -795,34 +804,27 @@ function gerarCanvasQuestao(canvasEl, temaSlug, qi) {
       px === 60 ? ctx.moveTo(px, y) : ctx.lineTo(px, Math.max(10, Math.min(H - 10, y)));
     }
     ctx.stroke();
-
   } else {
-    // Círculo unitário / ciclo
     const R3 = 44;
     ctx.beginPath(); ctx.arc(cx, cy, R3, 0, Math.PI * 2);
     ctx.strokeStyle = col.a + '55'; ctx.lineWidth = 1.5; ctx.stroke();
-    // raio
     const ang = (qi * 40) % 360 * Math.PI / 180;
     const ex = cx + R3 * Math.cos(ang), ey = cy + R3 * Math.sin(ang);
     ctx.strokeStyle = col.a; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
-    // ponto
     ctx.beginPath(); ctx.arc(ex, ey, 5, 0, Math.PI * 2);
     ctx.fillStyle = col.b; ctx.fill();
-    // eixos
     ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(cx - R3 - 10, cy); ctx.lineTo(cx + R3 + 10, cy); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, cy - R3 - 10); ctx.lineTo(cx, cy + R3 + 10); ctx.stroke();
   }
 
-  // Número da questão no canto
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.font = 'bold 52px JetBrains Mono';
   ctx.textAlign = 'right';
   ctx.fillText(String(qi + 1).padStart(2, '0'), W - 12, H - 8);
   ctx.textAlign = 'left';
 
-  // Gradiente de sombra inferior para o caption
   const grad2 = ctx.createLinearGradient(0, H * 0.55, 0, H);
   grad2.addColorStop(0, 'transparent');
   grad2.addColorStop(1, 'rgba(4,6,12,0.88)');
@@ -1333,6 +1335,20 @@ function _setLoading(msg='Gerando atividade com IA…'){
   </div>`;
 }
 
+/* ====================================================
+   ★ FIX PRINCIPAL: fetch SEM AbortController
+   O AbortSignal não pode ser clonado/serializado em
+   alguns ambientes (sandbox, iframes). Removemos o
+   AbortController e usamos um timeout com Promise.race.
+   ==================================================== */
+async function fetchComTimeout(url, options, timeoutMs) {
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('timeout')), timeoutMs)
+  );
+  const fetchPromise = fetch(url, options);
+  return Promise.race([fetchPromise, timeoutPromise]);
+}
+
 async function carregarAtv(tipoIdx){
   const tipo=tiposAtv[tipoIdx];
   const k=`${atvState.tema}_${atvState.serie}_${tipoIdx}`;
@@ -1364,169 +1380,185 @@ OBRIGATÓRIO:
 Responda APENAS JSON válido sem markdown:
 {"questoes":[{"enunciado":"","opcoes":["A. ","B. ","C. ","D. "],"correta":0,"explicacao":"","imagemKeyword":"","imagemCaption":""}]}`;
 
-  try{
-    const ctrl=new AbortController();
-    const tid=setTimeout(()=>ctrl.abort(),20000);
-    const delays=[1500,3000,6000,10000];
-    let resp;
-    for(let t=0;t<4;t++){
-      try{
-        resp=await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,
-            system:"Professor de matemática. Responda APENAS com JSON válido sem markdown.",
-            messages:[{role:"user",content:prompt}]}),
-          signal:ctrl.signal});
-        clearTimeout(tid);
-        if(resp.ok)break;
-        if(resp.status===429||resp.status>=500){
-          const st=document.querySelector('#atvBody .loading-status');
-          if(st)st.textContent=`⏳ Aguardando (tentativa ${t+2}/4)…`;
-          await new Promise(r=>setTimeout(r,delays[t]));continue;
-        }
-        break;
-      }catch(e){
-        if(t<3){const st=document.querySelector('#atvBody .loading-status');if(st)st.textContent=`⚠️ Tentativa ${t+2}/4…`;await new Promise(r=>setTimeout(r,delays[t]));}
-        else throw e;
+  const delays = [1500, 3000, 6000];
+  let lastError = null;
+
+  for (let tentativa = 0; tentativa < 4; tentativa++) {
+    try {
+      // Atualiza status
+      const st = document.querySelector('#atvBody .loading-status');
+      if (st && tentativa > 0) st.textContent = `⏳ Aguardando (tentativa ${tentativa + 1}/4)…`;
+
+      // ★ Sem AbortController — usa Promise.race com timeout manual
+      const resp = await fetchComTimeout(
+        "https://api.anthropic.com/v1/messages",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 4000,
+            system: "Professor de matemática. Responda APENAS com JSON válido sem markdown.",
+            messages: [{ role: "user", content: prompt }]
+          })
+        },
+        22000
+      );
+
+      if (resp.ok) {
+        const data = await resp.json();
+        let raw = data.content.filter(b => b.type === 'text').map(b => b.text || '').join('');
+        raw = raw.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+        const ji = raw.indexOf('{'), je = raw.lastIndexOf('}');
+        if (ji !== -1 && je !== -1) raw = raw.slice(ji, je + 1);
+        const parsed = JSON.parse(raw);
+        if (!parsed.questoes || parsed.questoes.length < 5) throw new Error('Questões insuficientes');
+        const qs = parsed.questoes.slice(0, 10).map((q, i) => {
+          q._imgCaption = q.imagemCaption || `Questão ${i + 1}: ${atvState.tituloAE}`;
+          return q;
+        });
+        atvState.cache[k] = qs;
+        renderAtv(qs, tipo);
+        return;
+      }
+
+      // Rate limit ou erro de servidor: espera e tenta de novo
+      if ((resp.status === 429 || resp.status >= 500) && tentativa < 3) {
+        await new Promise(r => setTimeout(r, delays[tentativa] || 3000));
+        continue;
+      }
+
+      throw new Error(`HTTP ${resp.status}`);
+
+    } catch (err) {
+      lastError = err;
+      if (tentativa < 3) {
+        await new Promise(r => setTimeout(r, delays[tentativa] || 3000));
       }
     }
-    if(!resp||!resp.ok)throw new Error('API falhou');
-    const data=await resp.json();
-    let raw=data.content.filter(b=>b.type==='text').map(b=>b.text||'').join('');
-    raw=raw.replace(/```json\s*/gi,'').replace(/```\s*/gi,'').trim();
-    const ji=raw.indexOf('{'),je=raw.lastIndexOf('}');
-    if(ji!==-1&&je!==-1)raw=raw.slice(ji,je+1);
-    const parsed=JSON.parse(raw);
-    if(!parsed.questoes||parsed.questoes.length<5)throw new Error('Questões insuficientes');
-    const qs=parsed.questoes.slice(0,10).map((q,i)=>{
-      q._imgCaption=q.imagemCaption||`Questão ${i+1}: ${atvState.tituloAE}`;
-      return q;
-    });
-    atvState.cache[k]=qs;renderAtv(qs,tipo);
-  }catch(err){
-    console.warn('Fallback:',err.message);
-    const fb=gerarFallback(atvState.tituloAE,tipoIdx,atvState.tema);
-    atvState.cache[k]=fb;renderAtv(fb,tipo);
   }
+
+  // Fallback após todas as tentativas falharem
+  console.warn('Fallback ativado:', lastError && lastError.message);
+  const fb = gerarFallback(atvState.tituloAE, tipoIdx, atvState.tema);
+  atvState.cache[k] = fb;
+  renderAtv(fb, tipo);
 }
 
-function gerarFallback(titulo,tipoIdx){
-  const tipo=tiposAtv[tipoIdx];
-  return Array.from({length:10},(_,i)=>({
-    enunciado:`[${tipo.nome}] Questão ${i+1} sobre ${titulo}. Se f(x) = ${i+2}x + ${i+1}, qual o valor de f(${i+1})?`,
-    opcoes:[`A. ${(i+2)*(i+1)+(i+1)}`,`B. ${(i+2)*(i+1)}`,`C. ${i+3}`,`D. ${(i+2)*(i+2)}`],
-    correta:0,
-    explicacao:`Substituindo x=${i+1}: f(${i+1})=${i+2}·${i+1}+${i+1}=${(i+2)*(i+1)+(i+1)}. Tema: ${titulo}.`,
-    _imgCaption:`Contexto matemático: ${titulo}`
+function gerarFallback(titulo, tipoIdx){
+  const tipo = tiposAtv[tipoIdx];
+  return Array.from({length:10}, (_, i) => ({
+    enunciado: `[${tipo.nome}] Questão ${i+1} sobre ${titulo}. Se f(x) = ${i+2}x + ${i+1}, qual o valor de f(${i+1})?`,
+    opcoes: [`A. ${(i+2)*(i+1)+(i+1)}`, `B. ${(i+2)*(i+1)}`, `C. ${i+3}`, `D. ${(i+2)*(i+2)}`],
+    correta: 0,
+    explicacao: `Substituindo x=${i+1}: f(${i+1})=${i+2}·${i+1}+${i+1}=${(i+2)*(i+1)+(i+1)}. Tema: ${titulo}.`,
+    _imgCaption: `Contexto matemático: ${titulo}`
   }));
 }
 
 /* ====================================================
-   ★ FIX 1 — GERAÇÃO E LEITURA CORRETA DO LINK ★
+   ★ FIX LINK: geração e leitura de URL correta
    ==================================================== */
 
 function gerarCodigoAtv(t, s, ti){
-  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let r='';for(let i=0;i<6;i++)r+=c[Math.floor(Math.random()*c.length)];
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r = '';
+  for (let i = 0; i < 6; i++) r += c[Math.floor(Math.random() * c.length)];
   return `${s.toUpperCase()}-${t.toUpperCase().slice(0,4)}-T${ti}-${r}`;
 }
 
 /**
- * Gera o link correto para o GitHub Pages.
- * window.location.href sem parâmetros = base do repositório.
- * Removemos qualquer ?query e #hash existente para obter a URL limpa.
+ * Gera URL compartilhável usando getAppBaseUrl().
+ * Funciona corretamente tanto em GitHub Pages quanto localmente.
  */
 function gerarLinkAtv(codigo){
-  const base = window.location.href.split('?')[0].split('#')[0];
+  const base = getAppBaseUrl();
   return `${base}?atv=${encodeURIComponent(codigo)}`;
 }
 
 /**
+ * Abre o link da atividade em nova aba.
+ */
+function verLinkAtv(){
+  const link = document.getElementById('atvShareInput').value;
+  if (link && !link.startsWith('about:') && !link.startsWith('blob:')) {
+    window.open(link, '_blank');
+  } else {
+    showToast('⚠️ Configure APP_BASE_URL no topo do arquivo para usar este recurso.');
+  }
+}
+
+/**
  * Lê o parâmetro ?atv= da URL ao carregar a página.
- * Se encontrado, exibe um banner e abre a atividade automaticamente
- * após a série correta ser carregada.
  */
 function lerParamAtv(){
-  const params = new URLSearchParams(window.location.search);
+  let search = window.location.search;
+  // Em ambientes sandbox (about:srcdoc) não há search real
+  if (!search && window.location.href.includes('?')) {
+    search = '?' + window.location.href.split('?')[1];
+  }
+  const params = new URLSearchParams(search);
   const cod = params.get('atv');
-  if(!cod) return;
+  if (!cod) return;
 
-  // Decodifica o código: SERIE-TEMA-TIPO-RANDOM
-  // ex: EF8-AFIM-T0-UQHG2T → serie=ef8, tema=afim, tipo=0
   const parts = cod.split('-');
-  if(parts.length < 4) return;
+  if (parts.length < 4) return;
 
-  const serieRaw = parts[0].toLowerCase();       // "ef8"
-  const temaRaw  = parts[1].toLowerCase();       // "afim"
+  const serieRaw = parts[0].toLowerCase();
+  const temaRaw  = parts[1].toLowerCase();
   const tipoRaw  = parseInt(parts[2].replace('T','')) || 0;
 
-  // Mapeia serie do código para a chave do seriesData
-  const serieMap = {
-    ef6:'ef6', ef7:'ef7', ef8:'ef8', ef9:'ef9',
-    em1:'em1', em2:'em2', em3:'em3'
-  };
+  const serieMap = {ef6:'ef6',ef7:'ef7',ef8:'ef8',ef9:'ef9',em1:'em1',em2:'em2',em3:'em3'};
   const serieKey = serieMap[serieRaw] || 'ef6';
 
-  // Busca a AE correspondente ao tema, ou usa o nome do tema diretamente
   const data = seriesData[serieKey];
   const ae = data ? data.aes.find(a => a.sim === temaRaw || a.code.toLowerCase().includes(temaRaw)) : null;
   const titulo = ae ? ae.title : (nomesSim[temaRaw] || temaRaw);
 
-  // Banner de aviso
   const banner = document.createElement('div');
   banner.className = 'atv-link-banner';
   banner.innerHTML = `✅ <strong>Atividade compartilhada carregada:</strong> ${titulo} — ${(seriesData[serieKey]||{}).name||serieKey}
     <button class="btn-sm" style="margin-left:auto;" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById('page-home').prepend(banner);
 
-  // Seleciona a série correta e abre a atividade
   selectSerie(serieKey);
-  document.querySelectorAll('.serie-btn').forEach(b=>{
-    if(b.textContent.trim() === (seriesData[serieKey]||{}).name||'') b.classList.add('active');
-  });
 
-  // Pequeno delay para garantir que a UI está pronta
-  setTimeout(()=>{
-    // Seleciona o tipo correto no modal
+  setTimeout(() => {
     atvState.tipoIdx = tipoRaw;
-    openAtvModal(temaRaw, titulo, serieKey).then(()=>{
-      // Força o tipo correto após abrir
+    openAtvModal(temaRaw, titulo, serieKey).then(() => {
       const tipoBtn = document.querySelector(`.tipo-btn[data-tipo="${tipoRaw}"]`);
-      if(tipoBtn && tipoRaw !== 0){
-        selecionarTipo(tipoRaw, tipoBtn);
-      }
+      if (tipoBtn && tipoRaw !== 0) selecionarTipo(tipoRaw, tipoBtn);
     });
   }, 400);
 }
 
 function renderAtv(qs, tipo){
-  atvState.questoes=qs;
-  atvState.respostas=new Array(qs.length).fill(null);
-  const cod=gerarCodigoAtv(atvState.tema,atvState.serie,atvState.tipoIdx);
-  atvState.codigo=cod;
+  atvState.questoes = qs;
+  atvState.respostas = new Array(qs.length).fill(null);
+  const cod = gerarCodigoAtv(atvState.tema, atvState.serie, atvState.tipoIdx);
+  atvState.codigo = cod;
 
-  // ★ FIX 1: usa gerarLinkAtv() para URL correta
+  // ★ FIX LINK: usa getAppBaseUrl() via gerarLinkAtv()
   const link = gerarLinkAtv(cod);
-  document.getElementById('atvShareInput').value=link;
-  document.getElementById('atvShareBox').style.display='block';
-  document.getElementById('atvRespondidas').textContent=`0/${qs.length}`;
-  document.getElementById('atvScore').textContent='0 pts';
+  document.getElementById('atvShareInput').value = link;
+  document.getElementById('atvShareBox').style.display = 'block';
+  document.getElementById('atvRespondidas').textContent = `0/${qs.length}`;
+  document.getElementById('atvScore').textContent = '0 pts';
 
-  const body=document.getElementById('atvBody');
-  body.innerHTML=`
+  const body = document.getElementById('atvBody');
+  body.innerHTML = `
     <div class="tipo-info-banner">
       <div class="tipo-info-icon">${tipo.emoji}</div>
       <div class="tipo-info-text"><h4>${tipo.nome}</h4><p>${tipo.descricao}</p></div>
     </div>
     <div class="prog-bar"><div class="prog-fill" id="atvProgFill" style="width:0%"></div></div>
-    ${qs.map((q,qi)=>{
-      const letras=['A','B','C','D'];
-      const opcsHtml=q.opcoes.map((opt,oi)=>`
+    ${qs.map((q, qi) => {
+      const letras = ['A','B','C','D'];
+      const opcsHtml = q.opcoes.map((opt, oi) => `
         <div class="questao-opcao" id="qo_${qi}_${oi}" onclick="responderAtv(${qi},${oi})">
           <span class="opcao-letra">${letras[oi]}</span>
-          <span>${opt.replace(/^[A-Da-d][.)]\s*/,'')}</span>
+          <span>${opt.replace(/^[A-Da-d][.)]\s*/, '')}</span>
         </div>`).join('');
-      // ★ FIX 2: canvas em vez de <img>
       return `<div class="questao-item" id="qi_${qi}">
         <div class="questao-num"><span class="q-badge">${String(qi+1).padStart(2,'0')}</span><span style="color:var(--text-tertiary);">${tipo.emoji} ${tipo.nome}</span></div>
         <div class="questao-enunciado">${q.enunciado}</div>
@@ -1540,49 +1572,50 @@ function renderAtv(qs, tipo){
       </div>`;
     }).join('')}`;
 
-  // ★ FIX 2: renderiza os canvas escalonados
-  qs.forEach((_,qi)=>setTimeout(()=>{
-    const cv=document.getElementById(`qic_${qi}`);
-    if(cv) gerarCanvasQuestao(cv, atvState.tema, qi);
-  }, qi*60));
+  qs.forEach((_, qi) => setTimeout(() => {
+    const cv = document.getElementById(`qic_${qi}`);
+    if (cv) gerarCanvasQuestao(cv, atvState.tema, qi);
+  }, qi * 60));
 }
 
-function responderAtv(qi,oi){
-  if(atvState.respostas[qi]!==null)return;
-  const q=atvState.questoes[qi];
-  atvState.respostas[qi]=oi;
-  const correta=oi===q.correta;
-  if(correta){atvState.pontos+=100;addXP(100);}
-  document.querySelectorAll(`#qi_${qi} .questao-opcao`).forEach((el,idx)=>{
+function responderAtv(qi, oi){
+  if (atvState.respostas[qi] !== null) return;
+  const q = atvState.questoes[qi];
+  atvState.respostas[qi] = oi;
+  const correta = oi === q.correta;
+  if (correta){ atvState.pontos += 100; addXP(100); }
+  document.querySelectorAll(`#qi_${qi} .questao-opcao`).forEach((el, idx) => {
     el.classList.add('disabled');
-    if(idx===q.correta)el.classList.add('correta');
-    if(idx===oi&&!correta)el.classList.add('errada');
+    if (idx === q.correta) el.classList.add('correta');
+    if (idx === oi && !correta) el.classList.add('errada');
   });
-  const fb=document.getElementById(`qf_${qi}`);
-  fb.innerHTML=`${correta?'✅ <strong>Correto!</strong>':'❌ <strong>Incorreto.</strong>'} ${q.explicacao}`;
+  const fb = document.getElementById(`qf_${qi}`);
+  fb.innerHTML = `${correta ? '✅ <strong>Correto!</strong>' : '❌ <strong>Incorreto.</strong>'} ${q.explicacao}`;
   fb.classList.add('visible');
   atvState.respondidas++;
-  const total=atvState.questoes.length;
-  document.getElementById('atvRespondidas').textContent=`${atvState.respondidas}/${total}`;
-  document.getElementById('atvScore').textContent=`${atvState.pontos} pts`;
-  const fill=document.getElementById('atvProgFill');if(fill)fill.style.width=((atvState.respondidas/total)*100)+'%';
-  if(atvState.respondidas===total)setTimeout(()=>mostrarResultadoAtv(),800);
-  document.getElementById(`qi_${qi}`).scrollIntoView({behavior:'smooth',block:'nearest'});
+  const total = atvState.questoes.length;
+  document.getElementById('atvRespondidas').textContent = `${atvState.respondidas}/${total}`;
+  document.getElementById('atvScore').textContent = `${atvState.pontos} pts`;
+  const fill = document.getElementById('atvProgFill');
+  if (fill) fill.style.width = ((atvState.respondidas / total) * 100) + '%';
+  if (atvState.respondidas === total) setTimeout(() => mostrarResultadoAtv(), 800);
+  document.getElementById(`qi_${qi}`).scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function mostrarResultadoAtv(){
-  const total=atvState.questoes.length;
-  const acertos=atvState.respostas.filter((r,i)=>r===atvState.questoes[i].correta).length;
-  const pct=Math.round((acertos/total)*100);
-  const tipo=tiposAtv[atvState.tipoIdx];
-  let emoji='😊',msg='Bom trabalho!';
-  if(pct>=90){emoji='🏆';msg='Domínio excelente!';}
-  else if(pct>=70){emoji='⭐';msg='Muito bom!';}
-  else if(pct>=50){emoji='💪';msg='Metade certa! Revise.';}
-  else{emoji='📚';msg='Revise o conteúdo.';}
-  const body=document.getElementById('atvBody');
-  const d=document.createElement('div');d.className='resultado';
-  d.innerHTML=`<div class="resultado-icon">${emoji}</div>
+  const total = atvState.questoes.length;
+  const acertos = atvState.respostas.filter((r, i) => r === atvState.questoes[i].correta).length;
+  const pct = Math.round((acertos / total) * 100);
+  const tipo = tiposAtv[atvState.tipoIdx];
+  let emoji = '😊', msg = 'Bom trabalho!';
+  if (pct >= 90){ emoji = '🏆'; msg = 'Domínio excelente!'; }
+  else if (pct >= 70){ emoji = '⭐'; msg = 'Muito bom!'; }
+  else if (pct >= 50){ emoji = '💪'; msg = 'Metade certa! Revise.'; }
+  else { emoji = '📚'; msg = 'Revise o conteúdo.'; }
+  const body = document.getElementById('atvBody');
+  const d = document.createElement('div');
+  d.className = 'resultado';
+  d.innerHTML = `<div class="resultado-icon">${emoji}</div>
     <div class="resultado-pts">${atvState.pontos} pts</div>
     <div class="resultado-texto">${msg}</div>
     <div class="resultado-stats">
@@ -1594,75 +1627,91 @@ function mostrarResultadoAtv(){
       <button class="btn-primary" onclick="recarregarAtv()">🔄 Nova</button>
       <button class="btn-ghost" onclick="closeAtvModal()">Fechar</button>
     </div>`;
-  body.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  body.appendChild(d);
+  d.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function closeAtvModal(){
   document.getElementById('atvOverlay').classList.remove('active');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
-document.getElementById('atvOverlay').addEventListener('click',function(e){if(e.target===this)closeAtvModal();});
+document.getElementById('atvOverlay').addEventListener('click', function(e){
+  if (e.target === this) closeAtvModal();
+});
 
 function copiarLinkAtv(){
-  const inp=document.getElementById('atvShareInput');
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(inp.value).then(()=>showToast('🔗 Link copiado!')).catch(()=>{_copyFB(inp);});
-  }else{_copyFB(inp);}
+  const inp = document.getElementById('atvShareInput');
+  if (navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(inp.value)
+      .then(() => showToast('🔗 Link copiado!'))
+      .catch(() => _copyFB(inp));
+  } else {
+    _copyFB(inp);
+  }
 }
 function _copyFB(inp){
-  inp.removeAttribute('readonly');inp.select();inp.setSelectionRange(0,99999);
-  try{document.execCommand('copy');showToast('🔗 Link copiado!');}catch(e){showToast('⚠️ Copie manualmente');}
-  inp.setAttribute('readonly','');
+  inp.removeAttribute('readonly');
+  inp.select();
+  inp.setSelectionRange(0, 99999);
+  try { document.execCommand('copy'); showToast('🔗 Link copiado!'); }
+  catch(e){ showToast('⚠️ Copie manualmente'); }
+  inp.setAttribute('readonly', '');
 }
 
 /* ====================================================
    SIM POPUP
    ==================================================== */
 function openSimPopup(tipo, titulo, anchorEl){
-  const info=simImgDB[tipo]||simImgDB.geometria3d;
-  document.getElementById('simPopupTitle').textContent=titulo;
-  document.getElementById('simImgTag').textContent=info.tag;
-  document.getElementById('simImgCaption').textContent=info.caption;
-  document.getElementById('simBody').innerHTML='';
-  document.getElementById('simPlaceholderIcon').textContent=info.icon||'📐';
-  document.getElementById('simPlaceholder').style.opacity='1';
-  const imgEl=document.getElementById('simImg');
-  imgEl.classList.remove('loaded');imgEl.src='';
-  if(simulators[tipo])simulators[tipo](document.getElementById('simBody'));
-  else document.getElementById('simBody').innerHTML=`<div class="sim-inner"><p>Simulador em construção.</p></div>`;
-  const popup=document.getElementById('simPopup');
-  popup.style.display='block';
+  const info = simImgDB[tipo] || simImgDB.geometria3d;
+  document.getElementById('simPopupTitle').textContent = titulo;
+  document.getElementById('simImgTag').textContent = info.tag;
+  document.getElementById('simImgCaption').textContent = info.caption;
+  document.getElementById('simBody').innerHTML = '';
+  document.getElementById('simPlaceholderIcon').textContent = info.icon || '📐';
+  document.getElementById('simPlaceholder').style.opacity = '1';
+  const imgEl = document.getElementById('simImg');
+  imgEl.classList.remove('loaded'); imgEl.src = '';
+  if (simulators[tipo]) simulators[tipo](document.getElementById('simBody'));
+  else document.getElementById('simBody').innerHTML = `<div class="sim-inner"><p>Simulador em construção.</p></div>`;
+  const popup = document.getElementById('simPopup');
+  popup.style.display = 'block';
   document.getElementById('simOverlay').classList.add('active');
-  if(anchorEl){
-    const rect=anchorEl.getBoundingClientRect();
-    const vpW=window.innerWidth,vpH=window.innerHeight;
-    const popW=Math.min(540,vpW*0.96);
-    let left=rect.left,top=rect.bottom+8+window.scrollY;
-    if(left+popW>vpW-8)left=vpW-popW-8;
-    if(left<8)left=8;
-    if(rect.bottom+520>vpH)top=rect.top+window.scrollY-520-8;
-    popup.style.position='absolute';popup.style.left=left+'px';popup.style.top=top+'px';popup.style.transform='none';
-  }else{
-    popup.style.position='fixed';popup.style.left='50%';popup.style.top='50%';popup.style.transform='translate(-50%,-50%)';
+  if (anchorEl){
+    const rect = anchorEl.getBoundingClientRect();
+    const vpW = window.innerWidth, vpH = window.innerHeight;
+    const popW = Math.min(540, vpW * 0.96);
+    let left = rect.left, top = rect.bottom + 8 + window.scrollY;
+    if (left + popW > vpW - 8) left = vpW - popW - 8;
+    if (left < 8) left = 8;
+    if (rect.bottom + 520 > vpH) top = rect.top + window.scrollY - 520 - 8;
+    popup.style.position = 'absolute';
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    popup.style.transform = 'none';
+  } else {
+    popup.style.position = 'fixed';
+    popup.style.left = '50%';
+    popup.style.top = '50%';
+    popup.style.transform = 'translate(-50%,-50%)';
   }
 }
 
 function closeSimPopup(){
-  document.getElementById('simPopup').style.display='none';
+  document.getElementById('simPopup').style.display = 'none';
   document.getElementById('simOverlay').classList.remove('active');
 }
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeSimPopup();closeAtvModal();}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape'){ closeSimPopup(); closeAtvModal(); }
 });
 
 /* ====================================================
    LÓGICA PRINCIPAL
    ==================================================== */
-let currentSerie=null, arenaState=null, quizState=null, xpTotal=0;
-let currentTemaFilter=null;
+let currentSerie = null, arenaState = null, quizState = null, xpTotal = 0;
+let currentTemaFilter = null;
 
-const nomesSim={
+const nomesSim = {
   fracao:'Frações',decimal:'Sistema Decimal',reta:'Reta Numérica',operacoes:'Operações',
   multiplos:'Múltiplos/MMC',angulos:'Ângulos',poligonos:'Polígonos',triangulos:'Triângulos',
   quadrilateros:'Quadriláteros',pitagoras:'Pitágoras',semelhanca:'Semelhança',
@@ -1673,76 +1722,75 @@ const nomesSim={
 };
 
 function changePage(p){
-  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`page-${p}`).classList.add('active');
-  ['home','simuladores','arena','quiz','professor'].forEach((tab,i)=>{
-    if(tab===p)document.querySelectorAll('.nav-tab')[i].classList.add('active');
+  ['home','simuladores','arena','quiz','professor'].forEach((tab, i) => {
+    if (tab === p) document.querySelectorAll('.nav-tab')[i].classList.add('active');
   });
 }
 
-function selectSerie(id,btn){
-  currentSerie=id;currentTemaFilter=null;
-  document.querySelectorAll('.serie-btn').forEach(b=>b.classList.remove('active'));
-  if(btn){
-    const label=btn.textContent;
-    document.querySelectorAll('.serie-btn').forEach(b=>{if(b.textContent===label)b.classList.add('active');});
+function selectSerie(id, btn){
+  currentSerie = id; currentTemaFilter = null;
+  document.querySelectorAll('.serie-btn').forEach(b => b.classList.remove('active'));
+  if (btn){
+    const label = btn.textContent;
+    document.querySelectorAll('.serie-btn').forEach(b => { if (b.textContent === label) b.classList.add('active'); });
   } else {
-    // Seleciona pelo id quando chamado sem botão (ex: via lerParamAtv)
-    const names=['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
-    const keys=['ef6','ef7','ef8','ef9','em1','em2','em3'];
-    const idx=keys.indexOf(id);
-    if(idx>=0){
-      document.querySelectorAll('.serie-btn').forEach(b=>{
-        if(b.textContent.trim()===names[idx])b.classList.add('active');
+    const names = ['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
+    const keys  = ['ef6','ef7','ef8','ef9','em1','em2','em3'];
+    const idx = keys.indexOf(id);
+    if (idx >= 0){
+      document.querySelectorAll('.serie-btn').forEach(b => {
+        if (b.textContent.trim() === names[idx]) b.classList.add('active');
       });
     }
   }
-  renderAEs();renderSimuladores();renderArena();renderQuiz();renderProfessor();
+  renderAEs(); renderSimuladores(); renderArena(); renderQuiz(); renderProfessor();
   renderTemasPills();
   updateProgress();
 }
 
 function getTemasUnicos(){
-  if(!currentSerie)return[];
-  const data=seriesData[currentSerie];
-  const tags={};
-  data.aes.forEach(ae=>{
-    const tagLabel={num:'Números',geo:'Geometria',alg:'Álgebra',est:'Estatística'}[ae.tag]||ae.tag;
-    tags[ae.tag]=tagLabel;
+  if (!currentSerie) return [];
+  const data = seriesData[currentSerie];
+  const tags = {};
+  data.aes.forEach(ae => {
+    const tagLabel = {num:'Números',geo:'Geometria',alg:'Álgebra',est:'Estatística'}[ae.tag] || ae.tag;
+    tags[ae.tag] = tagLabel;
   });
-  return Object.entries(tags).map(([tag,label])=>({tag,label}));
+  return Object.entries(tags).map(([tag, label]) => ({tag, label}));
 }
 
 function renderTemasPills(){
-  const container1=document.getElementById('temasContainerHome');
-  const container2=document.getElementById('temasContainerSim');
-  const temas=getTemasUnicos();
-  if(!currentSerie||temas.length<2){
-    if(container1)container1.style.display='none';
-    if(container2)container2.style.display='none';
+  const container1 = document.getElementById('temasContainerHome');
+  const container2 = document.getElementById('temasContainerSim');
+  const temas = getTemasUnicos();
+  if (!currentSerie || temas.length < 2){
+    if (container1) container1.style.display = 'none';
+    if (container2) container2.style.display = 'none';
     return;
   }
-  const pillsHtml=`<button class="tema-pill active" data-tag="all" onclick="filtrarTema('all',this)">Todos</button>`+
-    temas.map(t=>`<button class="tema-pill" data-tag="${t.tag}" onclick="filtrarTema('${t.tag}',this)">${t.label}</button>`).join('');
-  if(container1){container1.style.display='block';document.getElementById('temasPillsHome').innerHTML=pillsHtml;document.getElementById('temasSerieLabel').textContent='— '+seriesData[currentSerie].name;}
-  if(container2){container2.style.display='block';document.getElementById('temasPillsSim').innerHTML=pillsHtml;}
+  const pillsHtml = `<button class="tema-pill active" data-tag="all" onclick="filtrarTema('all',this)">Todos</button>` +
+    temas.map(t => `<button class="tema-pill" data-tag="${t.tag}" onclick="filtrarTema('${t.tag}',this)">${t.label}</button>`).join('');
+  if (container1){ container1.style.display = 'block'; document.getElementById('temasPillsHome').innerHTML = pillsHtml; document.getElementById('temasSerieLabel').textContent = '— ' + seriesData[currentSerie].name; }
+  if (container2){ container2.style.display = 'block'; document.getElementById('temasPillsSim').innerHTML = pillsHtml; }
 }
 
-function filtrarTema(tag,btn){
-  currentTemaFilter=tag==='all'?null:tag;
-  document.querySelectorAll('.tema-pill').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll(`.tema-pill[data-tag="${tag}"]`).forEach(b=>b.classList.add('active'));
+function filtrarTema(tag, btn){
+  currentTemaFilter = tag === 'all' ? null : tag;
+  document.querySelectorAll('.tema-pill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll(`.tema-pill[data-tag="${tag}"]`).forEach(b => b.classList.add('active'));
   renderAEs();
 }
 
 function renderAEs(){
-  if(!currentSerie)return;
-  const data=seriesData[currentSerie];
-  const aes=currentTemaFilter?data.aes.filter(ae=>ae.tag===currentTemaFilter):data.aes;
-  const tagColors={num:'ae-tag num',geo:'ae-tag geo',alg:'ae-tag alg',est:'ae-tag est'};
-  const tagLabels={num:'Números',geo:'Geometria',alg:'Álgebra',est:'Estatística'};
-  document.getElementById('aeGrid').innerHTML=aes.map(ae=>`
+  if (!currentSerie) return;
+  const data = seriesData[currentSerie];
+  const aes = currentTemaFilter ? data.aes.filter(ae => ae.tag === currentTemaFilter) : data.aes;
+  const tagColors = {num:'ae-tag num',geo:'ae-tag geo',alg:'ae-tag alg',est:'ae-tag est'};
+  const tagLabels = {num:'Números',geo:'Geometria',alg:'Álgebra',est:'Estatística'};
+  document.getElementById('aeGrid').innerHTML = aes.map(ae => `
     <div class="ae-card">
       <div class="ae-code">${ae.code}</div>
       <span class="${tagColors[ae.tag]||'ae-tag num'}">${tagLabels[ae.tag]||ae.tag}</span>
@@ -1758,9 +1806,9 @@ function renderAEs(){
 }
 
 function renderSimuladores(){
-  if(!currentSerie)return;
-  const data=seriesData[currentSerie];
-  document.getElementById('simGrid').innerHTML=data.simuladores.map(tipo=>`
+  if (!currentSerie) return;
+  const data = seriesData[currentSerie];
+  document.getElementById('simGrid').innerHTML = data.simuladores.map(tipo => `
     <div class="ae-card">
       <div class="ae-title">${nomesSim[tipo]||tipo}</div>
       <div class="ae-desc">${(simImgDB[tipo]||simImgDB.geometria3d).caption}</div>
@@ -1772,89 +1820,107 @@ function renderSimuladores(){
 }
 
 function renderArena(){
-  if(!currentSerie)return;
-  const data=seriesData[currentSerie];
-  arenaState={idx:0,score:0,questions:[...data.arenaChallenges],corrects:0};
-  document.getElementById('arenaSerieLabel').innerHTML=data.name;
-  document.getElementById('arenaScore').innerText='0';
-  document.getElementById('arenaAcertos').innerHTML=`0/${arenaState.questions.length}`;
-  document.getElementById('arenaEmpty').style.display='none';
-  document.getElementById('arenaQ').style.display='block';
-  document.getElementById('arenaResult').style.display='none';
+  if (!currentSerie) return;
+  const data = seriesData[currentSerie];
+  arenaState = {idx:0, score:0, questions:[...data.arenaChallenges], corrects:0};
+  document.getElementById('arenaSerieLabel').innerHTML = data.name;
+  document.getElementById('arenaScore').innerText = '0';
+  document.getElementById('arenaAcertos').innerHTML = `0/${arenaState.questions.length}`;
+  document.getElementById('arenaEmpty').style.display = 'none';
+  document.getElementById('arenaQ').style.display = 'block';
+  document.getElementById('arenaResult').style.display = 'none';
   displayArenaQ();
 }
 
 function displayArenaQ(){
-  if(arenaState.idx>=arenaState.questions.length){finishArena();return;}
-  const q=arenaState.questions[arenaState.idx];
-  document.getElementById('arenaQNum').innerHTML=`Q ${arenaState.idx+1}/${arenaState.questions.length}`;
-  document.getElementById('arenaQText').innerHTML=q.q;
-  document.getElementById('arenaOpts').innerHTML=q.opts.map((opt,i)=>`<button class="arena-opt" onclick="answerArena(${i})"><span class="arena-opt-letter">${String.fromCharCode(65+i)}</span>${opt}</button>`).join('');
-  document.getElementById('arenaFeedback').innerHTML='';
-  document.getElementById('arenaNextBtn').style.display='none';
-  arenaState.answered=false;
-  if(arenaState.timer)clearInterval(arenaState.timer);
-  let sec=15;document.getElementById('arenaFeedback').innerHTML=`⏱ ${sec}s`;
-  arenaState.timer=setInterval(()=>{sec--;document.getElementById('arenaFeedback').innerHTML=`⏱ ${sec}s`;if(sec<=0&&!arenaState.answered){clearInterval(arenaState.timer);answerArena(-1);}},1000);
+  if (arenaState.idx >= arenaState.questions.length){ finishArena(); return; }
+  const q = arenaState.questions[arenaState.idx];
+  document.getElementById('arenaQNum').innerHTML = `Q ${arenaState.idx + 1}/${arenaState.questions.length}`;
+  document.getElementById('arenaQText').innerHTML = q.q;
+  document.getElementById('arenaOpts').innerHTML = q.opts.map((opt, i) =>
+    `<button class="arena-opt" onclick="answerArena(${i})"><span class="arena-opt-letter">${String.fromCharCode(65+i)}</span>${opt}</button>`
+  ).join('');
+  document.getElementById('arenaFeedback').innerHTML = '';
+  document.getElementById('arenaNextBtn').style.display = 'none';
+  arenaState.answered = false;
+  if (arenaState.timer) clearInterval(arenaState.timer);
+  let sec = 15;
+  document.getElementById('arenaFeedback').innerHTML = `⏱ ${sec}s`;
+  arenaState.timer = setInterval(() => {
+    sec--;
+    document.getElementById('arenaFeedback').innerHTML = `⏱ ${sec}s`;
+    if (sec <= 0 && !arenaState.answered){ clearInterval(arenaState.timer); answerArena(-1); }
+  }, 1000);
 }
 
 function answerArena(sel){
-  if(arenaState.answered)return;
+  if (arenaState.answered) return;
   clearInterval(arenaState.timer);
-  const q=arenaState.questions[arenaState.idx];
-  const ok=sel===q.correct;
-  if(ok){arenaState.score+=100;arenaState.corrects++;document.getElementById('arenaScore').innerText=arenaState.score;addXP(100);}
-  document.getElementById('arenaFeedback').innerHTML=`<div class="explicacao-box">${ok?'✅ Correto! ':'❌ Errado! '}${ok?'':q.opts[q.correct]+'. '}${q.expl||''}</div>`;
-  arenaState.answered=true;
-  document.querySelectorAll('.arena-opt').forEach((b,i)=>{b.classList.add('disabled');if(i===q.correct)b.classList.add('correct');if(i===sel&&!ok)b.classList.add('wrong');});
-  document.getElementById('arenaAcertos').innerHTML=`${arenaState.corrects}/${arenaState.questions.length}`;
+  const q = arenaState.questions[arenaState.idx];
+  const ok = sel === q.correct;
+  if (ok){ arenaState.score += 100; arenaState.corrects++; document.getElementById('arenaScore').innerText = arenaState.score; addXP(100); }
+  document.getElementById('arenaFeedback').innerHTML = `<div class="explicacao-box">${ok ? '✅ Correto! ' : '❌ Errado! '}${ok ? '' : q.opts[q.correct] + '. '}${q.expl||''}</div>`;
+  arenaState.answered = true;
+  document.querySelectorAll('.arena-opt').forEach((b, i) => {
+    b.classList.add('disabled');
+    if (i === q.correct) b.classList.add('correct');
+    if (i === sel && !ok) b.classList.add('wrong');
+  });
+  document.getElementById('arenaAcertos').innerHTML = `${arenaState.corrects}/${arenaState.questions.length}`;
   arenaState.idx++;
-  document.getElementById('arenaNextBtn').style.display='block';
-  document.getElementById('arenaPbFill').style.width=((arenaState.idx/arenaState.questions.length)*100)+'%';
+  document.getElementById('arenaNextBtn').style.display = 'block';
+  document.getElementById('arenaPbFill').style.width = ((arenaState.idx / arenaState.questions.length) * 100) + '%';
 }
 
-function nextArenaQ(){displayArenaQ();}
+function nextArenaQ(){ displayArenaQ(); }
 function finishArena(){
-  document.getElementById('arenaQ').style.display='none';
-  document.getElementById('arenaResult').style.display='block';
-  document.getElementById('arenaResult').innerHTML=`<div style="font-size:1.3rem;margin-bottom:0.625rem;">🏆 ${arenaState.score} pts</div><div style="color:var(--text-secondary);font-size:0.875rem;">Acertos: ${arenaState.corrects}/${arenaState.questions.length}</div><button class="btn-primary" style="margin-top:0.875rem;" onclick="renderArena()">Jogar Novamente</button>`;
+  document.getElementById('arenaQ').style.display = 'none';
+  document.getElementById('arenaResult').style.display = 'block';
+  document.getElementById('arenaResult').innerHTML = `<div style="font-size:1.3rem;margin-bottom:0.625rem;">🏆 ${arenaState.score} pts</div><div style="color:var(--text-secondary);font-size:0.875rem;">Acertos: ${arenaState.corrects}/${arenaState.questions.length}</div><button class="btn-primary" style="margin-top:0.875rem;" onclick="renderArena()">Jogar Novamente</button>`;
 }
 
 function renderQuiz(){
-  if(!currentSerie)return;
-  const data=seriesData[currentSerie];
-  quizState={questions:[...data.quizBank],idx:0,score:0,answered:false};
+  if (!currentSerie) return;
+  const data = seriesData[currentSerie];
+  quizState = {questions:[...data.quizBank], idx:0, score:0, answered:false};
   displayQuizQ();
 }
 
 function displayQuizQ(){
-  if(quizState.idx>=quizState.questions.length){finishQuiz();return;}
-  const q=quizState.questions[quizState.idx];
-  document.getElementById('quizHeader').innerHTML=`Q ${quizState.idx+1}/${quizState.questions.length}`;
-  document.getElementById('quizBody').innerHTML=`<div style="font-weight:600;margin-bottom:0.875rem;line-height:1.5;font-size:0.875rem;">${q.q}</div><div>${q.opts.map((opt,i)=>`<div class="quiz-option" onclick="answerQuiz(${i})">${opt}</div>`).join('')}</div>`;
-  document.getElementById('quizNextBtn').style.display='none';
-  quizState.answered=false;
+  if (quizState.idx >= quizState.questions.length){ finishQuiz(); return; }
+  const q = quizState.questions[quizState.idx];
+  document.getElementById('quizHeader').innerHTML = `Q ${quizState.idx + 1}/${quizState.questions.length}`;
+  document.getElementById('quizBody').innerHTML = `<div style="font-weight:600;margin-bottom:0.875rem;line-height:1.5;font-size:0.875rem;">${q.q}</div><div>${q.opts.map((opt, i) => `<div class="quiz-option" onclick="answerQuiz(${i})">${opt}</div>`).join('')}</div>`;
+  document.getElementById('quizNextBtn').style.display = 'none';
+  quizState.answered = false;
 }
 
 function answerQuiz(sel){
-  if(quizState.answered)return;
-  const q=quizState.questions[quizState.idx];
-  const ok=sel===q.correct;
-  if(ok){quizState.score+=100;addXP(100);}
-  document.getElementById('quizBody').innerHTML+=`<div class="explicacao-box">${ok?'✅ ':'❌ '}${q.expl||''}</div>`;
-  document.querySelectorAll('.quiz-option').forEach((el,i)=>{el.classList.add('disabled');if(i===q.correct)el.classList.add('correct');if(i===sel&&!ok)el.classList.add('wrong');});
-  quizState.answered=true;quizState.idx++;
-  document.getElementById('quizNextBtn').style.display='block';
-  document.getElementById('quizScore').innerText=quizState.score;
+  if (quizState.answered) return;
+  const q = quizState.questions[quizState.idx];
+  const ok = sel === q.correct;
+  if (ok){ quizState.score += 100; addXP(100); }
+  document.getElementById('quizBody').innerHTML += `<div class="explicacao-box">${ok ? '✅ ' : '❌ '}${q.expl||''}</div>`;
+  document.querySelectorAll('.quiz-option').forEach((el, i) => {
+    el.classList.add('disabled');
+    if (i === q.correct) el.classList.add('correct');
+    if (i === sel && !ok) el.classList.add('wrong');
+  });
+  quizState.answered = true; quizState.idx++;
+  document.getElementById('quizNextBtn').style.display = 'block';
+  document.getElementById('quizScore').innerText = quizState.score;
 }
 
-function nextQuizQ(){displayQuizQ();}
-function finishQuiz(){document.getElementById('quizBody').innerHTML=`<div class="empty-state">🏆 Quiz finalizado! ${quizState.score} pts</div>`;document.getElementById('quizNextBtn').style.display='none';}
+function nextQuizQ(){ displayQuizQ(); }
+function finishQuiz(){
+  document.getElementById('quizBody').innerHTML = `<div class="empty-state">🏆 Quiz finalizado! ${quizState.score} pts</div>`;
+  document.getElementById('quizNextBtn').style.display = 'none';
+}
 
-function openPlano(code,title){
-  const sd=seriesData[currentSerie];
-  document.getElementById('planoTitle').textContent=`Plano — ${code}`;
-  document.getElementById('planoContent').innerHTML=`
+function openPlano(code, title){
+  const sd = seriesData[currentSerie];
+  document.getElementById('planoTitle').textContent = `Plano — ${code}`;
+  document.getElementById('planoContent').innerHTML = `
     <p style="font-weight:700;margin-bottom:0.5rem;">${title} (${sd.name})</p>
     <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;">
       <strong>Objetivos:</strong> Compreender e aplicar os conceitos de ${title}.<br>
@@ -1865,13 +1931,13 @@ function openPlano(code,title){
     </p>`;
   document.getElementById('planoPanel').classList.add('active');
 }
-function closePlano(){document.getElementById('planoPanel').classList.remove('active');}
-function startSerieQuiz(){renderQuiz();changePage('quiz');}
+function closePlano(){ document.getElementById('planoPanel').classList.remove('active'); }
+function startSerieQuiz(){ renderQuiz(); changePage('quiz'); }
 
 function renderProfessor(){
-  if(!currentSerie)return;
-  const data=seriesData[currentSerie];
-  document.getElementById('profGrid').innerHTML=data.simuladores.map(tipo=>`
+  if (!currentSerie) return;
+  const data = seriesData[currentSerie];
+  document.getElementById('profGrid').innerHTML = data.simuladores.map(tipo => `
     <div class="ae-card">
       <div class="ae-title">🎓 ${nomesSim[tipo]||tipo}</div>
       <div class="ae-desc">${(simImgDB[tipo]||simImgDB.geometria3d).caption}</div>
@@ -1882,28 +1948,30 @@ function renderProfessor(){
     </div>`).join('');
 }
 
-function updateProgress(){document.getElementById('xpTotal').innerText=xpTotal;}
-function addXP(v){xpTotal+=v;updateProgress();showToast(`+${v} XP`);}
+function updateProgress(){ document.getElementById('xpTotal').innerText = xpTotal; }
+function addXP(v){ xpTotal += v; updateProgress(); showToast(`+${v} XP`); }
 function showToast(msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toastText').innerHTML=msg;
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').innerHTML = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 /* ── INICIALIZAÇÃO ── */
 function initSelectors(){
-  const series=['ef6','ef7','ef8','ef9','em1','em2','em3'];
-  const names=['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
-  series.forEach((s,i)=>{
-    const btn=`<button class="serie-btn" onclick="selectSerie('${s}',this)">${names[i]}</button>`;
-    document.querySelectorAll('.serie-nav').forEach(nav=>nav.innerHTML+=btn);
+  const series = ['ef6','ef7','ef8','ef9','em1','em2','em3'];
+  const names  = ['6º Ano','7º Ano','8º Ano','9º Ano','1ª EM','2ª EM','3ª EM'];
+  series.forEach((s, i) => {
+    const btn = `<button class="serie-btn" onclick="selectSerie('${s}',this)">${names[i]}</button>`;
+    document.querySelectorAll('.serie-nav').forEach(nav => nav.innerHTML += btn);
   });
   selectSerie('ef6');
-  document.querySelectorAll('.serie-nav').forEach(nav=>{
-    const first=nav.querySelector('.serie-btn');if(first)first.classList.add('active');
+  document.querySelectorAll('.serie-nav').forEach(nav => {
+    const first = nav.querySelector('.serie-btn');
+    if (first) first.classList.add('active');
   });
 
-  // ★ FIX 1: lê parâmetro ?atv= da URL
+  // Lê parâmetro ?atv= da URL
   lerParamAtv();
 }
 initSelectors();
